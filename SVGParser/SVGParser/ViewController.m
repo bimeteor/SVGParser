@@ -12,6 +12,19 @@
 #import "QCEasyXMLParser.h"
 #import "UIView+Addition.h"
 
+typedef NS_ENUM(NSUInteger, SVGNodeType)
+{
+    SVGSVGNodeType,
+    SVGGroupNodeType,
+    SVGDefineNodeType,
+    SVGEffectNodeType,
+    SVGGraphNodeType,
+    SVGTextNodeType,
+    SVGViewNodeType,
+};
+
+NSString *graphs_names[]={@"path", @"line", @"rect", @"circle", @"ellipse", @"polyline", @"polygon"};
+
 @interface ViewController ()
 {
     NSMutableDictionary *_dict;
@@ -36,13 +49,175 @@ CAShapeLayer *layer_from_node_atts(NSDictionary *dict)
     return layer;
 }
 
-NSDictionary *atts_from_dict(NSDictionary *dict)
+CALayer *layer_from_path_node(XMLNode *node)
+{
+    
+    return nil;
+}
+
+NSDictionary *att_from_raw_couple(NSString *key, NSString *val)
+{
+    //path
+    if ([key isEqualToString:@"opacity"])
+    {
+        return @{@"opacity": val};
+    }else if ([key isEqualToString:@"fill"])
+    {
+        if ([val isEqualToString:@"none"])
+        {
+            return @{@"fillColor": (__bridge_transfer id)[UIColor clearColor].CGColor};
+        }else
+        {
+            NSScanner *scan=[NSScanner scannerWithString:[val substringFromIndex:1]];
+            unsigned num;
+            [scan scanHexInt:&num];
+            return @{@"fillColor": (__bridge_transfer id)color_rgb(num).CGColor};
+        }
+    }else if ([key isEqualToString:@"fill-rule"])
+    {
+        if ([val isEqualToString:@"evenodd"])
+        {
+            return @{@"fillRule": @"even-odd"};
+        }else
+        {
+            return nil;//TODO:frank
+        }
+    }else if ([key isEqualToString:@"stroke"])
+    {
+        if ([val isEqualToString:@"none"])
+        {
+            return @{@"fillColor": (__bridge_transfer id)[UIColor clearColor].CGColor};
+        }else
+        {
+            NSScanner *scan=[NSScanner scannerWithString:[val substringFromIndex:1]];
+            unsigned num;
+            [scan scanHexInt:&num];
+            return @{@"fillColor": (__bridge_transfer id)color_rgb(num).CGColor};
+        }
+    }else if ([key isEqualToString:@"stroke-width"])
+    {
+        return @{@"lineWidth": val};
+    }else if ([key isEqualToString:@"stroke-linecap"])
+    {
+        return @{@"lineCap": val};
+    }else if ([key isEqualToString:@"stroke-linejoin"])
+    {
+        return @{@"lineJoin": val};
+    }else if ([key isEqualToString:@"stroke-miterlimit"])
+    {
+        return @{@"miterLimit": val};
+    }
+    //font
+    else if ([key isEqualToString:@"font-size"])
+    {
+        return @{@"fontSize": val};
+    }else if ([key isEqualToString:@"font-family"])
+    {
+        return @{@"font": val};
+    }else
+    {
+        return nil;
+    }
+}
+
+CAShapeLayer *layer_from_line_node(XMLNode *node)
+{
+    UIBezierPath *path=[UIBezierPath bezierPath];
+    [path moveToPoint:point([node.attributes[@"x1"] floatValue], [node.attributes[@"y1"] floatValue])];
+    [path addLineToPoint:point([node.attributes[@"x2"] floatValue], [node.attributes[@"y2"] floatValue])];
+    CAShapeLayer *layer = [CAShapeLayer layer];
+    layer.path=path.CGPath;
+    for (NSString *key in node.attributes)
+    {
+        NSDictionary *dict=att_from_raw_couple(key, node.attributes[key]);
+        if (dict.count>0)
+        {
+            [layer setValue:dict.allKeys.firstObject forKey:dict.allValues.firstObject];
+        }
+    }
+    return layer;
+}
+
+CAShapeLayer *layer_from_rect_node(XMLNode *node)
+{
+    UIBezierPath *path=[UIBezierPath bezierPathWithRoundedRect:rect([node.attributes[@"x"] floatValue], [node.attributes[@"t"] floatValue], [node.attributes[@"width"] floatValue], [node.attributes[@"height"] floatValue]) cornerRadius:[node.attributes[@"rx"] floatValue]];
+    CAShapeLayer *layer = [CAShapeLayer layer];
+    layer.path=path.CGPath;
+    for (NSString *key in node.attributes)
+    {
+        NSDictionary *dict=att_from_raw_couple(key, node.attributes[key]);
+        if (dict.count>0)
+        {
+            [layer setValue:dict.allKeys.firstObject forKey:dict.allValues.firstObject];
+        }
+    }
+    return layer;
+}
+
+CAShapeLayer *layer_from_circle_node(XMLNode *node)
+{
+    UIBezierPath *path=[UIBezierPath bezierPathWithOvalInRect:rect([node.attributes[@"cx"] floatValue]-[node.attributes[@"rx"] floatValue], [node.attributes[@"cy"] floatValue]-[node.attributes[@"ry"] floatValue], [node.attributes[@"r"] floatValue]*2, [node.attributes[@"r"] floatValue]*2)];
+    CAShapeLayer *layer = [CAShapeLayer layer];
+    layer.path=path.CGPath;
+    for (NSString *key in node.attributes)
+    {
+        NSDictionary *dict=att_from_raw_couple(key, node.attributes[key]);
+        if (dict.count>0)
+        {
+            [layer setValue:dict.allKeys.firstObject forKey:dict.allValues.firstObject];
+        }
+    }
+    return layer;
+}
+
+CAShapeLayer *layer_from_ellipse_node(XMLNode *node)
+{
+    UIBezierPath *path=[UIBezierPath bezierPathWithOvalInRect:rect([node.attributes[@"cx"] floatValue]-[node.attributes[@"rx"] floatValue], [node.attributes[@"cy"] floatValue]-[node.attributes[@"ry"] floatValue], [node.attributes[@"rx"] floatValue]*2, [node.attributes[@"ry"] floatValue]*2)];
+    CAShapeLayer *layer = [CAShapeLayer layer];
+    layer.path=path.CGPath;
+    for (NSString *key in node.attributes)
+    {
+        NSDictionary *dict=att_from_raw_couple(key, node.attributes[key]);
+        if (dict.count>0)
+        {
+            [layer setValue:dict.allKeys.firstObject forKey:dict.allValues.firstObject];
+        }
+    }
+    return layer;
+}
+
+//polygon
+CAShapeLayer *layer_from_poly_node(XMLNode *node)
+{
+    NSString *str=node.attributes[@"points"];
+    UIBezierPath *path=path_from_str(node.attributes[@"points"]);
+    CAShapeLayer *layer = [CAShapeLayer layer];
+    layer.path=path.CGPath;
+    for (NSString *key in node.attributes)
+    {
+        NSDictionary *dict=att_from_raw_couple(key, node.attributes[key]);
+        if (dict.count>0)
+        {
+            [layer setValue:dict.allKeys.firstObject forKey:dict.allValues.firstObject];
+        }
+    }
+    return layer;
+}
+
+CATextLayer *layer_from_text_atts(NSDictionary *dict)
+{
+    CATextLayer *layer=[CATextLayer layer];
+    return nil;
+}
+
+NSDictionary *atts_from_raw(NSDictionary *dict)
 {
     NSMutableDictionary *dic=[NSMutableDictionary new];
     NSString *str;
     for (NSString *key in dict)
     {
         str = dict[key];
+        //path
         if ([key isEqualToString:@"opacity"])
         {
             dic[@"opacity"]=dict[key];
@@ -91,9 +266,14 @@ NSDictionary *atts_from_dict(NSDictionary *dict)
         }else if ([key isEqualToString:@"d"])
         {
             dic[@"path"]=path_from_str(dict[key]);
-        }else
+        }
+        //font
+        else if ([key isEqualToString:@"font-size"])
         {
-            //NSLog(@"%@ = %@", key, dict[key]);
+            dic[@"fontSize"]=dict[key];
+        }else if ([key isEqualToString:@"font-family"])
+        {
+            dic[@"font"]=dict[key];
         }
     }
     return dic;
@@ -215,6 +395,15 @@ UIBezierPath *path_from_str(NSString *str)
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    CATextLayer *lay=[CATextLayer layer];
+    [self.view.layer addSublayer:lay];
+    lay.contentsScale=[UIScreen mainScreen].scale;
+    lay.frame=rect(10, 20, 200, 70);
+    lay.string=@"qrqwerq";
+    lay.foregroundColor=[UIColor redColor].CGColor;
+    lay.font=(__bridge_retained CFTypeRef)@"Verdana";
+    
     CALayer *layer=[CALayer layer];
     layer.frame=CGRectMake(50, 90, 200, 200);
     [self.view.layer addSublayer:layer];
@@ -227,7 +416,7 @@ UIBezierPath *path_from_str(NSString *str)
     {
         NSString *str=[NSString stringWithFormat:@"XMLID_%i_", i+1];
         XMLNode *node1=[node nodeForAttributeKey:@"id" value:str];
-        CAShapeLayer *layer1=layer_from_node_atts(atts_from_dict(node1.attributes));
+        CAShapeLayer *layer1=layer_from_node_atts(atts_from_raw(node1.attributes));
         [layer addSublayer:layer1];
         layer1.frame=CGRectMake(0, 0, 200, 200);
         _dict[str]=layer1;
