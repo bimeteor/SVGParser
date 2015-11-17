@@ -13,6 +13,11 @@
 		D6CE6B191BFB6B91005DB3A7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D6CE6B171BFB6B91005DB3A7 /* Main.storyboard */; };
 		D6CE6B1B1BFB6B91005DB3A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D6CE6B1A1BFB6B91005DB3A7 /* Assets.xcassets */; };
 		D6CE6B1E1BFB6B91005DB3A7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D6CE6B1C1BFB6B91005DB3A7 /* LaunchScreen.storyboard */; };
+		D6CE6B261BFB6D5B005DB3A7 /*  dov_all_loading.svg in Resources */ = {isa = PBXBuildFile; fileRef = D6CE6B251BFB6D5B005DB3A7 /*  dov_all_loading.svg */; };
+		D6CE6B2F1BFB6D6E005DB3A7 /* UIView+NSLayoutExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B281BFB6D6E005DB3A7 /* UIView+NSLayoutExtension.m */; };
+		D6CE6B301BFB6D6E005DB3A7 /* UIView+Addition.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B2A1BFB6D6E005DB3A7 /* UIView+Addition.m */; };
+		D6CE6B311BFB6D6E005DB3A7 /* PathDrawingView.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B2C1BFB6D6E005DB3A7 /* PathDrawingView.m */; };
+		D6CE6B321BFB6D6E005DB3A7 /* QCEasyXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B2E1BFB6D6E005DB3A7 /* QCEasyXMLParser.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +31,15 @@
 		D6CE6B1A1BFB6B91005DB3A7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D6CE6B1D1BFB6B91005DB3A7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D6CE6B1F1BFB6B91005DB3A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D6CE6B251BFB6D5B005DB3A7 /*  dov_all_loading.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = " dov_all_loading.svg"; sourceTree = "<group>"; };
+		D6CE6B271BFB6D6E005DB3A7 /* UIView+NSLayoutExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+NSLayoutExtension.h"; sourceTree = "<group>"; };
+		D6CE6B281BFB6D6E005DB3A7 /* UIView+NSLayoutExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+NSLayoutExtension.m"; sourceTree = "<group>"; };
+		D6CE6B291BFB6D6E005DB3A7 /* UIView+Addition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Addition.h"; sourceTree = "<group>"; };
+		D6CE6B2A1BFB6D6E005DB3A7 /* UIView+Addition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Addition.m"; sourceTree = "<group>"; };
+		D6CE6B2B1BFB6D6E005DB3A7 /* PathDrawingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathDrawingView.h; sourceTree = "<group>"; };
+		D6CE6B2C1BFB6D6E005DB3A7 /* PathDrawingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PathDrawingView.m; sourceTree = "<group>"; };
+		D6CE6B2D1BFB6D6E005DB3A7 /* QCEasyXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QCEasyXMLParser.h; sourceTree = "<group>"; };
+		D6CE6B2E1BFB6D6E005DB3A7 /* QCEasyXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QCEasyXMLParser.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,8 +74,17 @@
 			children = (
 				D6CE6B111BFB6B91005DB3A7 /* AppDelegate.h */,
 				D6CE6B121BFB6B91005DB3A7 /* AppDelegate.m */,
+				D6CE6B271BFB6D6E005DB3A7 /* UIView+NSLayoutExtension.h */,
+				D6CE6B281BFB6D6E005DB3A7 /* UIView+NSLayoutExtension.m */,
+				D6CE6B291BFB6D6E005DB3A7 /* UIView+Addition.h */,
+				D6CE6B2A1BFB6D6E005DB3A7 /* UIView+Addition.m */,
+				D6CE6B2B1BFB6D6E005DB3A7 /* PathDrawingView.h */,
+				D6CE6B2C1BFB6D6E005DB3A7 /* PathDrawingView.m */,
+				D6CE6B2D1BFB6D6E005DB3A7 /* QCEasyXMLParser.h */,
+				D6CE6B2E1BFB6D6E005DB3A7 /* QCEasyXMLParser.m */,
 				D6CE6B141BFB6B91005DB3A7 /* ViewController.h */,
 				D6CE6B151BFB6B91005DB3A7 /* ViewController.m */,
+				D6CE6B251BFB6D5B005DB3A7 /*  dov_all_loading.svg */,
 				D6CE6B171BFB6B91005DB3A7 /* Main.storyboard */,
 				D6CE6B1A1BFB6B91005DB3A7 /* Assets.xcassets */,
 				D6CE6B1C1BFB6B91005DB3A7 /* LaunchScreen.storyboard */,
@@ -136,6 +159,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D6CE6B261BFB6D5B005DB3A7 /*  dov_all_loading.svg in Resources */,
 				D6CE6B1E1BFB6B91005DB3A7 /* LaunchScreen.storyboard in Resources */,
 				D6CE6B1B1BFB6B91005DB3A7 /* Assets.xcassets in Resources */,
 				D6CE6B191BFB6B91005DB3A7 /* Main.storyboard in Resources */,
@@ -150,7 +174,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				D6CE6B161BFB6B91005DB3A7 /* ViewController.m in Sources */,
+				D6CE6B321BFB6D6E005DB3A7 /* QCEasyXMLParser.m in Sources */,
+				D6CE6B301BFB6D6E005DB3A7 /* UIView+Addition.m in Sources */,
+				D6CE6B2F1BFB6D6E005DB3A7 /* UIView+NSLayoutExtension.m in Sources */,
 				D6CE6B131BFB6B91005DB3A7 /* AppDelegate.m in Sources */,
+				D6CE6B311BFB6D6E005DB3A7 /* PathDrawingView.m in Sources */,
 				D6CE6B101BFB6B91005DB3A7 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
