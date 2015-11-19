@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import "UIView+NSLayoutExtension.h"
 #import "PathDrawingView.h"
-#import "QCEasyXMLParser.h"
+#import "XMLParser.h"
 #import "UIView+Addition.h"
 
 typedef NS_ENUM(NSUInteger, SVGNodeType)
@@ -345,7 +345,20 @@ CATextLayer *layer_from_text_node(XMLNode *node)
     //shape_by_attrs(layer, node);//TODO:frank
     return layer;
 }
-
+/*
+CALayer *layer_from_node(XMLNode *node)
+{
+    if ([node.name isEqualToString:@""])
+    {
+        <#statements#>
+    }
+    CALayer *layer=nil;
+    for (<#type *object#> in <#collection#>) {
+        <#statements#>
+    }
+    return layer;
+}
+*/
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
 {
     if (flag)
@@ -376,7 +389,7 @@ CATextLayer *layer_from_text_node(XMLNode *node)
     layer.transform=CATransform3DMakeScale(0.5, 0.5, 1);
     
     NSString *path=[[NSBundle mainBundle] pathForResource:@" dov_all_loading" ofType:@"svg"];
-    XMLNode *node=[QCEasyXMLParser nodeWithData:[NSData dataWithContentsOfFile:path]];
+    XMLNode *node=[XMLParser nodeWithString:[NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil]];
     _dict=[NSMutableDictionary new];
     for (int i=0; i<7; ++i)
     {

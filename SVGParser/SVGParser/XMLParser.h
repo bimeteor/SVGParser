@@ -1,5 +1,5 @@
 //
-//  QCEasyXMLParser.h
+//  XMLParser.h
 //  QCall
 //
 //  Created by frank on 15/3/19.
@@ -13,13 +13,13 @@
 @property (nonatomic) NSDictionary *attributes;
 @property (nonatomic) NSString *value;
 @property (nonatomic) NSArray *childNodes;
-@property (nonatomic) XMLNode *parentNode;
+@property (weak, nonatomic) XMLNode *parentNode;
 - (XMLNode*)nodeForName:(NSString*)name; //深度优先
 - (XMLNode*)nodeForAttributeKey:(NSString*)key value:(NSString*)value; //深度优先
 - (XMLNode*)nodeForKeyPath:(NSString*)keyPath;
 @end
 
-@interface QCEasyXMLParser : NSObject
-+ (XMLNode*)nodeWithData:(NSData*)data;
+@interface XMLParser : NSObject
++ (XMLNode*)nodeWithString:(NSString*)string;
 + (NSString*)stringWithNode:(XMLNode*)node;
 @end
