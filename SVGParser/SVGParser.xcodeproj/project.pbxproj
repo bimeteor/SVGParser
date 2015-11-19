@@ -18,6 +18,7 @@
 		D6CE6B2F1BFB6D6E005DB3A7 /* UIView+NSLayoutExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B281BFB6D6E005DB3A7 /* UIView+NSLayoutExtension.m */; };
 		D6CE6B301BFB6D6E005DB3A7 /* UIView+Addition.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B2A1BFB6D6E005DB3A7 /* UIView+Addition.m */; };
 		D6CE6B311BFB6D6E005DB3A7 /* PathDrawingView.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B2C1BFB6D6E005DB3A7 /* PathDrawingView.m */; };
+		D6CE6B5A1BFE201A005DB3A7 /* basic.svg in Resources */ = {isa = PBXBuildFile; fileRef = D6CE6B591BFE201A005DB3A7 /* basic.svg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		D6CE6B2A1BFB6D6E005DB3A7 /* UIView+Addition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Addition.m"; sourceTree = "<group>"; };
 		D6CE6B2B1BFB6D6E005DB3A7 /* PathDrawingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathDrawingView.h; sourceTree = "<group>"; };
 		D6CE6B2C1BFB6D6E005DB3A7 /* PathDrawingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PathDrawingView.m; sourceTree = "<group>"; };
+		D6CE6B591BFE201A005DB3A7 /* basic.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic.svg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +86,7 @@
 				4B8BD4B41BFDA7D600663933 /* XMLParser.m */,
 				D6CE6B141BFB6B91005DB3A7 /* ViewController.h */,
 				D6CE6B151BFB6B91005DB3A7 /* ViewController.m */,
+				D6CE6B591BFE201A005DB3A7 /* basic.svg */,
 				D6CE6B251BFB6D5B005DB3A7 /*  dov_all_loading.svg */,
 				D6CE6B171BFB6B91005DB3A7 /* Main.storyboard */,
 				D6CE6B1A1BFB6B91005DB3A7 /* Assets.xcassets */,
@@ -159,6 +162,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D6CE6B5A1BFE201A005DB3A7 /* basic.svg in Resources */,
 				D6CE6B261BFB6D5B005DB3A7 /*  dov_all_loading.svg in Resources */,
 				D6CE6B1E1BFB6B91005DB3A7 /* LaunchScreen.storyboard in Resources */,
 				D6CE6B1B1BFB6B91005DB3A7 /* Assets.xcassets in Resources */,

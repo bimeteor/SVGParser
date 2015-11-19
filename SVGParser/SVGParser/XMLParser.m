@@ -33,6 +33,16 @@ static bool is_node_str_match(XMLNode *node, NSString *str)
 
 @implementation XMLNode
 
+- (XMLNode*)rootNode
+{
+    XMLNode *node=self;
+    while (node.parentNode)
+    {
+        node=node.parentNode;
+    }
+    return node;
+}
+
 - (XMLNode*)nodeForName:(NSString *)name
 {
     if ([_name isEqualToString:name])

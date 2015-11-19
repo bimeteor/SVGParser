@@ -56,6 +56,9 @@ static UIColor *color_from_name(NSString *str)
     }else if ([str isEqualToString:@"black"])
     {
         return [UIColor blackColor];
+    }else if ([str isEqualToString:@"purple"])
+    {
+        return [UIColor purpleColor];
     }
     return nil;
 }
@@ -170,9 +173,10 @@ static void attr_from_raw_couple(NSString *key1, NSString *val1, NSString **key2
         *key2=@"opacity",*val2=val1;
     }else if ([key1 isEqualToString:@"fill"])
     {
-        if ([val1 isEqualToString:@"none"])
+        UIColor *color=color_from_name(val1);
+        if (color)
         {
-            *key2=@"fillColor",*val2=(__bridge id)[UIColor clearColor].CGColor;
+            *key2=@"fillColor",*val2=(__bridge id)color.CGColor;
         }else
         {
             NSScanner *scan=[NSScanner scannerWithString:[val1 substringFromIndex:1]];
@@ -188,9 +192,10 @@ static void attr_from_raw_couple(NSString *key1, NSString *val1, NSString **key2
         }
     }else if ([key1 isEqualToString:@"stroke"])
     {
-        if ([val1 isEqualToString:@"none"])
+        UIColor *color=color_from_name(val1);
+        if (color)
         {
-            *key2=@"strokeColor",*val2=(__bridge id)[UIColor clearColor].CGColor;
+            *key2=@"strokeColor",*val2=(__bridge id)color.CGColor;
         }else
         {
             NSScanner *scan=[NSScanner scannerWithString:[val1 substringFromIndex:1]];
@@ -228,7 +233,7 @@ static void shape_by_attrs(CAShapeLayer *layer, XMLNode *node)
     {
         attr_from_raw_couple(tmp, node.attributes[tmp], &key, &val);
         if (key)
-        {NSLog(@"%s %@ %@", __func__, key, val);
+        {//NSLog(@"%s %@ %@", __func__, key, val);
             [layer setValue:val forKey:key];
         }
     }
@@ -240,9 +245,22 @@ static void shape_by_attrs(CAShapeLayer *layer, XMLNode *node)
             {
                 attr_from_raw_couple(tmp, node.attributes[tmp], &key, &val);
                 if (key)
-                {NSLog(@"%s %@ %@", __func__, key, val);
+                {//NSLog(@"%s %@ %@", __func__, key, val);
                     [layer setValue:val forKey:key];
                 }
+            }
+        }else if ([node.parentNode.name isEqualToString:@"svg"])
+        {
+            NSString *str=node.parentNode.attributes[@"viewBox"];//TODO:frank
+            if (str.length>0)
+            {
+                NSScanner *scan=[NSScanner scannerWithString:str];
+                CGSize size;
+                [scan scanDouble:&size.width];
+                [scan scanDouble:&size.height];
+                [scan scanDouble:&size.width];
+                [scan scanDouble:&size.height];
+                layer.frame=rect(0, 0, size.width, size.height);
             }
         }
         node=node.parentNode;
@@ -270,7 +288,7 @@ CAShapeLayer *layer_from_line_node(XMLNode *node)
 
 CAShapeLayer *layer_from_rect_node(XMLNode *node)
 {
-    UIBezierPath *path=[UIBezierPath bezierPathWithRoundedRect:rect([node.attributes[@"x"] floatValue], [node.attributes[@"t"] floatValue], [node.attributes[@"width"] floatValue], [node.attributes[@"height"] floatValue]) cornerRadius:[node.attributes[@"rx"] floatValue]];
+    UIBezierPath *path=[UIBezierPath bezierPathWithRoundedRect:rect([node.attributes[@"x"] floatValue], [node.attributes[@"y"] floatValue], [node.attributes[@"width"] floatValue], [node.attributes[@"height"] floatValue]) cornerRadius:[node.attributes[@"rx"] floatValue]];
     CAShapeLayer *layer = [CAShapeLayer layer];
     layer.path=path.CGPath;
     shape_by_attrs(layer, node);
@@ -345,20 +363,86 @@ CATextLayer *layer_from_text_node(XMLNode *node)
     //shape_by_attrs(layer, node);//TODO:frank
     return layer;
 }
-/*
+
 CALayer *layer_from_node(XMLNode *node)
 {
-    if ([node.name isEqualToString:@""])
+    CALayer *layer = nil;
+    if ([node.name isEqualToString:@"path"])
     {
-        <#statements#>
-    }
-    CALayer *layer=nil;
-    for (<#type *object#> in <#collection#>) {
-        <#statements#>
+        layer=layer_from_path_node(node);
+    }else if ([node.name isEqualToString:@"line"])
+    {
+        layer=layer_from_line_node(node);
+    }else if ([node.name isEqualToString:@"rect"])
+    {
+        layer=layer_from_rect_node(node);
+    }else if ([node.name isEqualToString:@"circle"])
+    {
+        layer=layer_from_circle_node(node);
+    }else if ([node.name isEqualToString:@"ellipse"])
+    {
+        layer=layer_from_ellipse_node(node);
+    }else if ([node.name isEqualToString:@"polyline"])
+    {
+        layer=layer_from_polyline_node(node);
+    }else if ([node.name isEqualToString:@"polygon"])
+    {
+        layer=layer_from_polygon_node(node);
+    }else if ([node.name isEqualToString:@"text"])
+    {
+        layer=layer_from_text_node(node);
     }
     return layer;
 }
-*/
+
+static void add_layers_from_node(XMLNode *node, NSMutableArray *arr)
+{
+    if ([node.name isEqualToString:@"path"])
+    {
+        [arr addObject:layer_from_path_node(node)];
+    }else if ([node.name isEqualToString:@"line"])
+    {
+        [arr addObject:layer_from_line_node(node)];
+    }else if ([node.name isEqualToString:@"rect"])
+    {
+        [arr addObject:layer_from_rect_node(node)];
+    }else if ([node.name isEqualToString:@"circle"])
+    {
+        [arr addObject:layer_from_circle_node(node)];
+    }else if ([node.name isEqualToString:@"ellipse"])
+    {
+        [arr addObject:layer_from_ellipse_node(node)];
+    }else if ([node.name isEqualToString:@"polyline"])
+    {
+        [arr addObject:layer_from_polyline_node(node)];
+    }else if ([node.name isEqualToString:@"polygon"])
+    {
+        [arr addObject:layer_from_polygon_node(node)];
+    }else if ([node.name isEqualToString:@"text"])
+    {
+        [arr addObject:layer_from_text_node(node)];
+    }else if ([node.name isEqualToString:@"svg"])
+    {
+        for (XMLNode *tmp in node.childNodes)
+        {
+            add_layers_from_node(tmp, arr);
+        }
+    }else if ([node.name isEqualToString:@"g"])
+    {
+        for (XMLNode *tmp in node.childNodes)
+        {
+            add_layers_from_node(tmp, arr);
+        }
+    }
+}
+
+NSArray *layers_from_node(XMLNode *node)
+{
+    NSMutableArray *arr=[NSMutableArray new];
+    add_layers_from_node(node, arr);
+    return arr.count>0? arr:nil;
+}
+
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
 {
     if (flag)
@@ -372,6 +456,26 @@ CALayer *layer_from_node(XMLNode *node)
 }
 
 - (void)viewDidLoad
+{
+    [super viewDidLoad];
+    NSString *path=[[NSBundle mainBundle] pathForResource:@"basic" ofType:@"svg"];
+    XMLNode *node=[XMLParser nodeWithString:[NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil]];
+    NSArray *arr=layers_from_node(node);
+    for (CALayer *layer in arr)
+    {
+        //NSLog(@"%s %@", __func__, [UIBezierPath bezierPathWithCGPath:[(CAShapeLayer*)layer path]]);
+        
+        CGSize size=layer.bounds.size;
+        CATransform3D t=CATransform3DMakeScale(0.25, 0.25, 1);
+        //t=CATransform3DTranslate(t, size.width/2, size.height/2, 0);
+        //layer.transform=t;
+        NSLog(@"%s %@", __func__, [NSValue valueWithCGPoint:layer.anchorPoint]);
+        [self.view.layer addSublayer:layer];
+        //layer.backgroundColor=[UIColor redColor].CGColor;
+    }
+}
+
+- (void)viewDidLoad1
 {
     [super viewDidLoad];
     
