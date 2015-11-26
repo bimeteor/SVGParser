@@ -275,12 +275,19 @@ static void shape_by_attrs(CAShapeLayer *layer, XMLNode *node)
 {
     NSString *key;
     NSObject *val;
+    NSMutableArray *trans=[NSMutableArray new];
     for (NSString *tmp in node.attributes)
     {
         attr_from_raw_couple(tmp, node.attributes[tmp], &key, &val);
         if (key)
         {
-            [layer setValue:val forKey:key];
+            if ([key isEqualToString:@"transform"])
+            {
+                [trans addObject:val];
+            }else
+            {
+                [layer setValue:val forKey:key];
+            }
         }
     }
     while (node.parentNode)
@@ -292,7 +299,13 @@ static void shape_by_attrs(CAShapeLayer *layer, XMLNode *node)
                 attr_from_raw_couple(tmp, node.parentNode.attributes[tmp], &key, &val);
                 if (key)
                 {
-                    [layer setValue:val forKey:key];
+                    if ([key isEqualToString:@"transform"])
+                    {
+                        [trans addObject:val];
+                    }else
+                    {
+                        [layer setValue:val forKey:key];
+                    }
                 }
             }
         }else if ([node.parentNode.name isEqualToString:@"svg"])
@@ -314,6 +327,12 @@ static void shape_by_attrs(CAShapeLayer *layer, XMLNode *node)
         }
         node=node.parentNode;
     }
+    CATransform3D t=CATransform3DIdentity;
+    for (NSValue *val in trans)
+    {
+        t=CATransform3DConcat(t, val.CATransform3DValue);
+    }
+    layer.transform=t;
 }
 
 CAShapeLayer *layer_from_path_node(XMLNode *node)
@@ -396,7 +415,7 @@ CAShapeLayer *layer_from_polyline_node(XMLNode *node)
     return layer;
 }
 
-CAShapeLayer *layer_from_polygon_node(XMLNode *node)//TODO:frank
+CAShapeLayer *layer_from_polygon_node(XMLNode *node)
 {
     NSScanner *scan=[NSScanner scannerWithString:node.attributes[@"points"]];
     CGPoint point;
