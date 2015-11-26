@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		4B8BD4B51BFDA7D600663933 /* XMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8BD4B41BFDA7D600663933 /* XMLParser.m */; };
 		4BD98B161C07055B0020EFB6 /* basic1.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD98B151C07055B0020EFB6 /* basic1.svg */; };
+		4BD98B181C0767D90020EFB6 /* basic2.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD98B171C0767D90020EFB6 /* basic2.svg */; };
+		4BD98B1A1C0769AC0020EFB6 /* basic3.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD98B191C0769AC0020EFB6 /* basic3.svg */; };
+		4BD98B1C1C076C400020EFB6 /* basic4.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD98B1B1C076C400020EFB6 /* basic4.svg */; };
 		D6CE6B101BFB6B91005DB3A7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B0F1BFB6B91005DB3A7 /* main.m */; };
 		D6CE6B131BFB6B91005DB3A7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B121BFB6B91005DB3A7 /* AppDelegate.m */; };
 		D6CE6B161BFB6B91005DB3A7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B151BFB6B91005DB3A7 /* ViewController.m */; };
@@ -26,6 +29,9 @@
 		4B8BD4B31BFDA7D600663933 /* XMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLParser.h; sourceTree = "<group>"; };
 		4B8BD4B41BFDA7D600663933 /* XMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMLParser.m; sourceTree = "<group>"; };
 		4BD98B151C07055B0020EFB6 /* basic1.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic1.svg; sourceTree = "<group>"; };
+		4BD98B171C0767D90020EFB6 /* basic2.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic2.svg; sourceTree = "<group>"; };
+		4BD98B191C0769AC0020EFB6 /* basic3.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic3.svg; sourceTree = "<group>"; };
+		4BD98B1B1C076C400020EFB6 /* basic4.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic4.svg; sourceTree = "<group>"; };
 		D6CE6B0B1BFB6B91005DB3A7 /* SVGParser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SVGParser.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6CE6B0F1BFB6B91005DB3A7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		D6CE6B111BFB6B91005DB3A7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -88,6 +94,9 @@
 				4B8BD4B41BFDA7D600663933 /* XMLParser.m */,
 				D6CE6B141BFB6B91005DB3A7 /* ViewController.h */,
 				D6CE6B151BFB6B91005DB3A7 /* ViewController.m */,
+				4BD98B1B1C076C400020EFB6 /* basic4.svg */,
+				4BD98B191C0769AC0020EFB6 /* basic3.svg */,
+				4BD98B171C0767D90020EFB6 /* basic2.svg */,
 				4BD98B151C07055B0020EFB6 /* basic1.svg */,
 				D6CE6B591BFE201A005DB3A7 /* basic.svg */,
 				D6CE6B251BFB6D5B005DB3A7 /*  dov_all_loading.svg */,
@@ -165,11 +174,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4BD98B181C0767D90020EFB6 /* basic2.svg in Resources */,
 				D6CE6B5A1BFE201A005DB3A7 /* basic.svg in Resources */,
 				4BD98B161C07055B0020EFB6 /* basic1.svg in Resources */,
 				D6CE6B261BFB6D5B005DB3A7 /*  dov_all_loading.svg in Resources */,
 				D6CE6B1E1BFB6B91005DB3A7 /* LaunchScreen.storyboard in Resources */,
+				4BD98B1A1C0769AC0020EFB6 /* basic3.svg in Resources */,
 				D6CE6B1B1BFB6B91005DB3A7 /* Assets.xcassets in Resources */,
+				4BD98B1C1C076C400020EFB6 /* basic4.svg in Resources */,
 				D6CE6B191BFB6B91005DB3A7 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -63,7 +63,7 @@ static UIColor *color_from_name(NSString *str)
     return nil;
 }
 
-static UIBezierPath *path_from_d(NSString *str)
+static UIBezierPath *path_from_d_str(NSString *str)
 {
     NSScanner *scan=[NSScanner scannerWithString:str];
     UIBezierPath *path = [UIBezierPath bezierPath];
@@ -160,15 +160,60 @@ static UIBezierPath *path_from_d(NSString *str)
             break;
         }
     }
-    NSLog(@"%@", [NSValue valueWithCGRect:path.bounds]);
     return path;
 }
 
-static void attr_from_raw_couple(NSString *key1, NSString *val1, NSString **key2, NSString **val2)
+static CATransform3D trans_from_trans_str(NSString *str)
+{
+    CATransform3D t=CATransform3DIdentity;
+    NSScanner *scan=[NSScanner scannerWithString:str];
+    while (!scan.isAtEnd)
+    {
+        NSString *tmp;
+        BOOL flag=[scan scanUpToString:@"(" intoString:&tmp];
+        if (flag)
+        {
+            scan.scanLocation+=1;
+            if ([tmp isEqualToString:@"rotate"])
+            {
+                float x;
+                [scan scanFloat:&x];
+                t=CATransform3DRotate(t, M_PI*x/180, 0, 0, 1);
+            }else if ([tmp isEqualToString:@"translate"])
+            {
+                float x, y;
+                [scan scanFloat:&x];
+                scan.scanLocation+=1;
+                [scan scanFloat:&y];
+                t=CATransform3DTranslate(t, x, y, 0);
+            }else if ([tmp isEqualToString:@"scale"])
+            {
+                float x, y;
+                [scan scanFloat:&x];
+                scan.scanLocation+=1;
+                [scan scanFloat:&y];
+                t=CATransform3DScale(t, x, y, 1);
+            }//TODO:skew
+            [scan scanUpToCharactersFromSet:[NSCharacterSet letterCharacterSet] intoString:nil];
+        }else
+        {
+            break;
+        }
+    }
+    return t;
+}
+
+static void attr_from_raw_couple(NSString *key1, NSString *val1, NSString **key2, NSObject **val2)
 {
     *key2=nil,*val2=nil;
     //path
-    if ([key1 isEqualToString:@"opacity"])
+    if ([key1 isEqualToString:@"id"]||[key1 isEqualToString:@"tag"]||[key1 isEqualToString:@"name"])
+    {
+        *key2=@"name",*val2=val1;
+    }else if ([key1 isEqualToString:@"transform"])
+    {
+        *key2=@"transform",*val2=[NSValue valueWithCATransform3D:trans_from_trans_str(val1)];
+    }else if ([key1 isEqualToString:@"opacity"])
     {
         *key2=@"opacity",*val2=val1;
     }else if ([key1 isEqualToString:@"fill"])
@@ -228,12 +273,13 @@ static void attr_from_raw_couple(NSString *key1, NSString *val1, NSString **key2
 
 static void shape_by_attrs(CAShapeLayer *layer, XMLNode *node)
 {
-    NSString *key, *val;
+    NSString *key;
+    NSObject *val;
     for (NSString *tmp in node.attributes)
     {
         attr_from_raw_couple(tmp, node.attributes[tmp], &key, &val);
         if (key)
-        {//NSLog(@"%s %@ %@", __func__, key, val);
+        {
             [layer setValue:val forKey:key];
         }
     }
@@ -243,24 +289,27 @@ static void shape_by_attrs(CAShapeLayer *layer, XMLNode *node)
         {
             for (NSString *tmp in node.parentNode.attributes)
             {
-                attr_from_raw_couple(tmp, node.attributes[tmp], &key, &val);
+                attr_from_raw_couple(tmp, node.parentNode.attributes[tmp], &key, &val);
                 if (key)
-                {//NSLog(@"%s %@ %@", __func__, key, val);
+                {
                     [layer setValue:val forKey:key];
                 }
             }
         }else if ([node.parentNode.name isEqualToString:@"svg"])
         {
-            NSString *str=node.parentNode.attributes[@"viewBox"];//TODO:frank
+            NSString *str=node.parentNode.attributes[@"viewBox1111"];//TODO:frank
             if (str.length>0)
             {
-                NSScanner *scan=[NSScanner scannerWithString:str];
-                CGSize size;
-                [scan scanDouble:&size.width];
-                [scan scanDouble:&size.height];
-                [scan scanDouble:&size.width];
-                [scan scanDouble:&size.height];
-                layer.frame=rect(0, 0, size.width, size.height);
+                NSScanner *scan=[NSScanner scannerWithString:str];//TODO:frank
+                CGRect rect;
+                [scan scanDouble:&rect.origin.x];
+                scan.scanLocation+=1;
+                [scan scanDouble:&rect.origin.y];
+                scan.scanLocation+=1;
+                [scan scanDouble:&rect.size.width];
+                scan.scanLocation+=1;
+                [scan scanDouble:&rect.size.height];
+                layer.frame=rect;
             }
         }
         node=node.parentNode;
@@ -270,7 +319,9 @@ static void shape_by_attrs(CAShapeLayer *layer, XMLNode *node)
 CAShapeLayer *layer_from_path_node(XMLNode *node)
 {
     CAShapeLayer *layer = [CAShapeLayer layer];
-    layer.path=path_from_d(node.attributes[@"d"]).CGPath;
+    layer.anchorPoint=CGPointZero;
+    layer.position=CGPointZero;
+    layer.path=path_from_d_str(node.attributes[@"d"]).CGPath;
     shape_by_attrs(layer, node);
     return layer;
 }
@@ -281,6 +332,8 @@ CAShapeLayer *layer_from_line_node(XMLNode *node)
     [path moveToPoint:point([node.attributes[@"x1"] floatValue], [node.attributes[@"y1"] floatValue])];
     [path addLineToPoint:point([node.attributes[@"x2"] floatValue], [node.attributes[@"y2"] floatValue])];
     CAShapeLayer *layer = [CAShapeLayer layer];
+    layer.anchorPoint=CGPointZero;
+    layer.position=CGPointZero;
     layer.path=path.CGPath;
     shape_by_attrs(layer, node);
     return layer;
@@ -290,6 +343,8 @@ CAShapeLayer *layer_from_rect_node(XMLNode *node)
 {
     UIBezierPath *path=[UIBezierPath bezierPathWithRoundedRect:rect([node.attributes[@"x"] floatValue], [node.attributes[@"y"] floatValue], [node.attributes[@"width"] floatValue], [node.attributes[@"height"] floatValue]) cornerRadius:[node.attributes[@"rx"] floatValue]];
     CAShapeLayer *layer = [CAShapeLayer layer];
+    layer.anchorPoint=CGPointZero;
+    layer.position=CGPointZero;
     layer.path=path.CGPath;
     shape_by_attrs(layer, node);
     return layer;
@@ -299,6 +354,8 @@ CAShapeLayer *layer_from_circle_node(XMLNode *node)
 {
     UIBezierPath *path=[UIBezierPath bezierPathWithOvalInRect:rect([node.attributes[@"cx"] floatValue]-[node.attributes[@"rx"] floatValue], [node.attributes[@"cy"] floatValue]-[node.attributes[@"ry"] floatValue], [node.attributes[@"r"] floatValue]*2, [node.attributes[@"r"] floatValue]*2)];
     CAShapeLayer *layer = [CAShapeLayer layer];
+    layer.anchorPoint=CGPointZero;
+    layer.position=CGPointZero;
     layer.path=path.CGPath;
     shape_by_attrs(layer, node);
     return layer;
@@ -308,6 +365,8 @@ CAShapeLayer *layer_from_ellipse_node(XMLNode *node)
 {
     UIBezierPath *path=[UIBezierPath bezierPathWithOvalInRect:rect([node.attributes[@"cx"] floatValue]-[node.attributes[@"rx"] floatValue], [node.attributes[@"cy"] floatValue]-[node.attributes[@"ry"] floatValue], [node.attributes[@"rx"] floatValue]*2, [node.attributes[@"ry"] floatValue]*2)];
     CAShapeLayer *layer = [CAShapeLayer layer];
+    layer.anchorPoint=CGPointZero;
+    layer.position=CGPointZero;
     layer.path=path.CGPath;
     shape_by_attrs(layer, node);
     return layer;
@@ -318,37 +377,45 @@ CAShapeLayer *layer_from_polyline_node(XMLNode *node)
     NSScanner *scan=[NSScanner scannerWithString:node.attributes[@"points"]];
     CGPoint point;
     [scan scanDouble:&point.x];
+    scan.scanLocation+=1;
     [scan scanDouble:&point.y];
     UIBezierPath *path=[UIBezierPath bezierPath];
     [path moveToPoint:point];
     while (!scan.atEnd)
     {
         [scan scanDouble:&point.x];
+        scan.scanLocation+=1;
         [scan scanDouble:&point.y];
-        [path moveToPoint:point];
+        [path addLineToPoint:point];
     }
     CAShapeLayer *layer = [CAShapeLayer layer];
+    layer.anchorPoint=CGPointZero;
+    layer.position=CGPointZero;
     layer.path=path.CGPath;
     shape_by_attrs(layer, node);
     return layer;
 }
 
-CAShapeLayer *layer_from_polygon_node(XMLNode *node)
+CAShapeLayer *layer_from_polygon_node(XMLNode *node)//TODO:frank
 {
     NSScanner *scan=[NSScanner scannerWithString:node.attributes[@"points"]];
     CGPoint point;
     [scan scanDouble:&point.x];
+    scan.scanLocation+=1;
     [scan scanDouble:&point.y];
     UIBezierPath *path=[UIBezierPath bezierPath];
     [path moveToPoint:point];
     while (!scan.atEnd)
     {
         [scan scanDouble:&point.x];
+        scan.scanLocation+=1;
         [scan scanDouble:&point.y];
-        [path moveToPoint:point];
+        [path addLineToPoint:point];
     }
     [path closePath];
     CAShapeLayer *layer = [CAShapeLayer layer];
+    layer.anchorPoint=CGPointZero;
+    layer.position=CGPointZero;
     layer.path=path.CGPath;
     shape_by_attrs(layer, node);
     return layer;
@@ -357,6 +424,8 @@ CAShapeLayer *layer_from_polygon_node(XMLNode *node)
 CATextLayer *layer_from_text_node(XMLNode *node)
 {
     CATextLayer *layer=[CATextLayer layer];
+    layer.anchorPoint=CGPointZero;
+    layer.position=CGPointZero;
     layer.contentsScale=[UIScreen mainScreen].scale;
     layer.string=node.value;
     layer.frame=rect([node.attributes[@"x"] floatValue], [node.attributes[@"y"] floatValue], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);//TODO:frank
@@ -421,13 +490,7 @@ static void add_layers_from_node(XMLNode *node, NSMutableArray *arr)
     }else if ([node.name isEqualToString:@"text"])
     {
         [arr addObject:layer_from_text_node(node)];
-    }else if ([node.name isEqualToString:@"svg"])
-    {
-        for (XMLNode *tmp in node.childNodes)
-        {
-            add_layers_from_node(tmp, arr);
-        }
-    }else if ([node.name isEqualToString:@"g"])
+    }else if ([node.name isEqualToString:@"svg"]||[node.name isEqualToString:@"g"])
     {
         for (XMLNode *tmp in node.childNodes)
         {
@@ -458,20 +521,12 @@ NSArray *layers_from_node(XMLNode *node)
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    NSString *path=[[NSBundle mainBundle] pathForResource:@"basic" ofType:@"svg"];
+    NSString *path=[[NSBundle mainBundle] pathForResource:@"basic4" ofType:@"svg"];
     XMLNode *node=[XMLParser nodeWithString:[NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil]];
     NSArray *arr=layers_from_node(node);
     for (CALayer *layer in arr)
     {
-        //NSLog(@"%s %@", __func__, [UIBezierPath bezierPathWithCGPath:[(CAShapeLayer*)layer path]]);
-        
-        CGSize size=layer.bounds.size;
-        CATransform3D t=CATransform3DMakeScale(0.25, 0.25, 1);
-        //t=CATransform3DTranslate(t, size.width/2, size.height/2, 0);
-        //layer.transform=t;
-        NSLog(@"%s %@", __func__, [NSValue valueWithCGPoint:layer.anchorPoint]);
         [self.view.layer addSublayer:layer];
-        //layer.backgroundColor=[UIColor redColor].CGColor;
     }
 }
 

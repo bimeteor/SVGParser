@@ -1,0 +1,21 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="12cm" height="4cm" viewBox="0 0 1200 400"
+     xmlns="http://www.w3.org/2000/svg" version="1.1">
+  <desc>Example ellipse01 - examples of ellipses</desc>
+
+  <!-- Show outline of canvas using 'rect' element -->
+  <rect x="1" y="1" width="118" height="39"
+        fill="none" stroke="blue" stroke-width="2" />
+
+  <g transform="translate(100 50)">
+    <ellipse rx="100" ry="50"
+          fill="red" transform="scale(0.4 0.4)"/>
+  </g>
+
+  <ellipse transform="translate(200 50) rotate(-30) scale(0.1 0.1)" 
+        rx="250" ry="100"
+        fill="none" stroke="blue" stroke-width="20"/>
+
+</svg>
