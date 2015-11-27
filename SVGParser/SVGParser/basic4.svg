@@ -9,7 +9,7 @@
   <rect x="1" y="1" width="118" height="39"
         fill="none" stroke="blue" stroke-width="2" />
 
-  <g transform="translate(100 50)">
+  <g transform="translate(100 50) skewX(45)">
     <ellipse rx="100" ry="50"
           fill="red" transform="scale(0.4 0.4)"/>
   </g>

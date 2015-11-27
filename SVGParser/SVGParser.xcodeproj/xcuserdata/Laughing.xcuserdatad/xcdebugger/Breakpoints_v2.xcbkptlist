@@ -19,13 +19,29 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "SVGParser/ViewController.m"
-            timestampString = "470337044.856003"
+            filePath = "SVGParser/SVGParser.m"
+            timestampString = "470343953.680514"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "266"
-            endingLineNumber = "266"
-            landmarkName = "path_from_d_str()"
+            startingLineNumber = "28"
+            endingLineNumber = "28"
+            landmarkName = "color_from_name()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SVGParser/SVGParser.m"
+            timestampString = "470343988.217004"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "378"
+            endingLineNumber = "378"
+            landmarkName = "attr_from_raw_couple_str()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -35,13 +51,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "SVGParser/ViewController.m"
-            timestampString = "470337215.95402"
+            filePath = "SVGParser/SVGParser.m"
+            timestampString = "470344002.178136"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "67"
-            endingLineNumber = "67"
-            landmarkName = "color_from_color_str()"
+            startingLineNumber = "433"
+            endingLineNumber = "433"
+            landmarkName = "shape_by_raw_couple_str()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
