@@ -63,10 +63,32 @@ static UIColor *color_from_name(NSString *str)
     return nil;
 }
 
+static UIColor *color_from_color_str(NSString *str)
+{
+    UIColor *color=color_from_name(str);
+    if (!color)
+    {
+        NSScanner *scan=[NSScanner scannerWithString:str];
+        [scan scanUpToCharactersFromSet:[NSCharacterSet alphanumericCharacterSet] intoString:nil];
+        if (!scan.isAtEnd)
+        {
+            unsigned num;
+            [scan scanHexInt:&num];
+            color=color_rgb(num);
+        }
+    }
+    if (!color)
+    {
+        color=[UIColor blueColor];
+    }
+    return color;
+}
+
 static UIBezierPath *path_from_d_str(NSString *str)
 {
     NSScanner *scan=[NSScanner scannerWithString:str];
     UIBezierPath *path = [UIBezierPath bezierPath];
+    float last_anchor_x=0, last_anchor_y=0;
     while (!scan.atEnd)
     {
         NSString *ch1;
@@ -123,7 +145,7 @@ static UIBezierPath *path_from_d_str(NSString *str)
                 [path addLineToPoint:point(path.currentPoint.x, y+path.currentPoint.y)];
             }else if ([ch1 isEqualToString:@"C"])
             {
-                float x1, y1, x2, y2, x3, y3;
+                float x1, y1, x2, y2, x, y;
                 [scan scanFloat:&x1];
                 [scan scanString:@"," intoString:nil];
                 [scan scanFloat:&y1];
@@ -132,13 +154,14 @@ static UIBezierPath *path_from_d_str(NSString *str)
                 [scan scanString:@"," intoString:nil];
                 [scan scanFloat:&y2];
                 [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&x3];
+                [scan scanFloat:&x];
                 [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y3];
-                [path addCurveToPoint:point(x3, y3) controlPoint1:point(x1, y1) controlPoint2:point(x2, y2)];
+                [scan scanFloat:&y];
+                last_anchor_x=x2, last_anchor_y=y2;
+                [path addCurveToPoint:point(x, y) controlPoint1:point(x1, y1) controlPoint2:point(x2, y2)];
             }else if ([ch1 isEqualToString:@"c"])
             {
-                float x1, y1, x2, y2, x3, y3;
+                float x1, y1, x2, y2, x, y;
                 [scan scanFloat:&x1];
                 [scan scanString:@"," intoString:nil];
                 [scan scanFloat:&y1];
@@ -147,10 +170,117 @@ static UIBezierPath *path_from_d_str(NSString *str)
                 [scan scanString:@"," intoString:nil];
                 [scan scanFloat:&y2];
                 [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&x3];
+                [scan scanFloat:&x];
                 [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y3];
-                [path addCurveToPoint:point(x3+path.currentPoint.x, y3+path.currentPoint.y) controlPoint1:point(x1+path.currentPoint.x, y1+path.currentPoint.y) controlPoint2:point(x2+path.currentPoint.x, y2+path.currentPoint.y)];
+                [scan scanFloat:&y];
+                last_anchor_x=x2+path.currentPoint.x, last_anchor_y=y2+path.currentPoint.y;
+                [path addCurveToPoint:point(x+path.currentPoint.x, y+path.currentPoint.y) controlPoint1:point(x1+path.currentPoint.x, y1+path.currentPoint.y) controlPoint2:point(x2+path.currentPoint.x, y2+path.currentPoint.y)];
+            }else if ([ch1 isEqualToString:@"S"])
+            {
+                float x2, y2, x, y;
+                [scan scanFloat:&x2];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&y2];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&x];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&y];
+                float tmp_x=last_anchor_x, tmp_y=last_anchor_y;
+                last_anchor_x=x2, last_anchor_y=y2;
+                [path addCurveToPoint:point(x, y) controlPoint1:point(2*path.currentPoint.x-tmp_x, 2*path.currentPoint.y-tmp_y) controlPoint2:point(x2, y2)];
+            }else if ([ch1 isEqualToString:@"s"])
+            {
+                float x2, y2, x, y;
+                [scan scanFloat:&x2];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&y2];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&x];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&y];
+                float tmp_x=last_anchor_x, tmp_y=last_anchor_y;
+                last_anchor_x=x2+path.currentPoint.x, last_anchor_y=y2+path.currentPoint.y;
+                [path addCurveToPoint:point(x+path.currentPoint.x, y+path.currentPoint.y) controlPoint1:point(2*path.currentPoint.x-tmp_x, 2*path.currentPoint.y-tmp_y) controlPoint2:point(x2+path.currentPoint.x, y2+path.currentPoint.y)];
+            }else if ([ch1 isEqualToString:@"Q"])
+            {
+                float x1, y1, x, y;
+                [scan scanFloat:&x1];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&y1];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&x];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&y];
+                last_anchor_x=x1, last_anchor_y=y1;
+                [path addQuadCurveToPoint:point(x, y) controlPoint:point(x1, y1)];
+            }else if ([ch1 isEqualToString:@"q"])
+            {
+                float x1, y1, x, y;
+                [scan scanFloat:&x1];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&y1];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&x];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&y];
+                last_anchor_x=x1+path.currentPoint.x, last_anchor_y=y1+path.currentPoint.y;
+                [path addQuadCurveToPoint:point(x+path.currentPoint.x, y+path.currentPoint.y) controlPoint:point(x1+path.currentPoint.x, y1+path.currentPoint.y)];
+            }else if ([ch1 isEqualToString:@"T"])
+            {
+                float x, y;
+                [scan scanFloat:&x];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&y];
+                float tmp_x=last_anchor_x, tmp_y=last_anchor_y;
+                last_anchor_x=x, last_anchor_y=y;
+                [path addQuadCurveToPoint:point(x, y) controlPoint:point(2*path.currentPoint.x-tmp_x, 2*path.currentPoint.y-tmp_y)];
+            }else if ([ch1 isEqualToString:@"t"])
+            {
+                float x, y;
+                [scan scanFloat:&x];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&y];
+                float tmp_x=last_anchor_x, tmp_y=last_anchor_y;
+                last_anchor_x=x+path.currentPoint.x, last_anchor_y=y+path.currentPoint.y;
+                [path addQuadCurveToPoint:point(x+path.currentPoint.x, y+path.currentPoint.y) controlPoint:point(2*path.currentPoint.x-tmp_x, 2*path.currentPoint.y-tmp_y)];
+            }else if ([ch1 isEqualToString:@"A"])
+            {
+                float rx, ry, big, clock, x, y;
+                [scan scanFloat:&rx];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&ry];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:NULL];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&big];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&clock];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&x];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&y];
+                float cx=path.currentPoint.x+(((y<=path.currentPoint.y?clock:!clock)?big:!big)?1:-1)*(rx+ry)/2*fabs(x-path.currentPoint.x)/sqrtf(powf(x-path.currentPoint.x, 2)+powf(y-path.currentPoint.y, 2));
+                float cy=path.currentPoint.y+(y-path.currentPoint.y)*(cx-path.currentPoint.x)/(x-path.currentPoint.x);
+                [path addArcWithCenter:point(cx, cy) radius:(rx+ry)/2 startAngle:atanf((path.currentPoint.y-cy)/(path.currentPoint.x-cx)) endAngle:atanf((y-cy)/(x-cx)) clockwise:clock];
+            }else if ([ch1 isEqualToString:@"a"])
+            {
+                float rx, ry, big, clock, x, y;
+                [scan scanFloat:&rx];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&ry];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:NULL];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&big];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&clock];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&x];
+                [scan scanString:@"," intoString:nil];
+                [scan scanFloat:&y];
+                float cx=path.currentPoint.x+(((y<=0?clock:!clock)?big:!big)?1:-1)*(rx+ry)/2*fabs(x)/sqrtf(powf(x, 2)+powf(y, 2));
+                float cy=path.currentPoint.y+y*(cx-path.currentPoint.x)/x;
+                [path addArcWithCenter:point(cx, cy) radius:(rx+ry)/2 startAngle:atanf((path.currentPoint.y-cy)/(path.currentPoint.x-cx)) endAngle:atanf((y+path.currentPoint.y-cy)/(x+path.currentPoint.x-cx)) clockwise:clock];
             }else if ([ch1 isEqualToString:@"Z"]||[ch1 isEqualToString:@"z"])
             {
                 [path closePath];
@@ -218,35 +348,17 @@ static void attr_from_raw_couple(NSString *key1, NSString *val1, NSString **key2
         *key2=@"opacity",*val2=val1;
     }else if ([key1 isEqualToString:@"fill"])
     {
-        UIColor *color=color_from_name(val1);
-        if (color)
-        {
-            *key2=@"fillColor",*val2=(__bridge id)color.CGColor;
-        }else
-        {
-            NSScanner *scan=[NSScanner scannerWithString:[val1 substringFromIndex:1]];
-            unsigned num;
-            [scan scanHexInt:&num];
-            *key2=@"fillColor",*val2=(__bridge id)color_rgb(num).CGColor;
-        }
+        *key2=@"fillColor";
+        *val2=(__bridge id)color_from_color_str(val1).CGColor;
+    }else if ([key1 isEqualToString:@"stroke"])
+    {
+        *key2=@"strokeColor";
+        *val2=(__bridge id)color_from_color_str(val1).CGColor;
     }else if ([key1 isEqualToString:@"fill-rule"])
     {
         if ([val1 isEqualToString:@"evenodd"])
         {
             *key2=@"fillRule",*val2=@"even-odd";
-        }
-    }else if ([key1 isEqualToString:@"stroke"])
-    {
-        UIColor *color=color_from_name(val1);
-        if (color)
-        {
-            *key2=@"strokeColor",*val2=(__bridge id)color.CGColor;
-        }else
-        {
-            NSScanner *scan=[NSScanner scannerWithString:[val1 substringFromIndex:1]];
-            unsigned num;
-            [scan scanHexInt:&num];
-            *key2=@"strokeColor",*val2=(__bridge id)color_rgb(num).CGColor;
         }
     }else if ([key1 isEqualToString:@"stroke-width"])
     {
@@ -271,6 +383,26 @@ static void attr_from_raw_couple(NSString *key1, NSString *val1, NSString **key2
     }
 }
 
+
+static NSDictionary *attrs_from_style_str(NSString *str)
+{
+    NSScanner *scan=[NSScanner scannerWithString:str];
+    NSString *key, *val;
+    NSMutableDictionary *dict=[NSMutableDictionary new];
+    while (!scan.isAtEnd)
+    {
+        [scan scanString:@" " intoString:nil];
+        BOOL flag=[scan scanUpToString:@":" intoString:&key];
+        if (flag)
+        {
+            [scan scanString:@" " intoString:nil];
+            [scan scanUpToString:@";" intoString:&val];
+            dict[key]=val;
+        }
+    }
+    return dict;
+}
+
 static void shape_by_attrs(CAShapeLayer *layer, XMLNode *node)
 {
     NSString *key;
@@ -278,15 +410,35 @@ static void shape_by_attrs(CAShapeLayer *layer, XMLNode *node)
     NSMutableArray *trans=[NSMutableArray new];
     for (NSString *tmp in node.attributes)
     {
-        attr_from_raw_couple(tmp, node.attributes[tmp], &key, &val);
-        if (key)
+        if ([tmp isEqualToString:@"style"])
         {
-            if ([key isEqualToString:@"transform"])
+            NSDictionary *dict=attrs_from_style_str(node.attributes[@"style"]);
+            for (NSString *style in dict)
             {
-                [trans addObject:val];
-            }else
+                attr_from_raw_couple(style, dict[style], &key, &val);
+                if (key)
+                {
+                    if ([key isEqualToString:@"transform"])
+                    {
+                        [trans addObject:val];
+                    }else
+                    {
+                        [layer setValue:val forKey:key];
+                    }
+                }
+            }
+        }else
+        {
+            attr_from_raw_couple(tmp, node.attributes[tmp], &key, &val);
+            if (key)
             {
-                [layer setValue:val forKey:key];
+                if ([key isEqualToString:@"transform"])
+                {
+                    [trans addObject:val];
+                }else
+                {
+                    [layer setValue:val forKey:key];
+                }
             }
         }
     }
@@ -296,15 +448,35 @@ static void shape_by_attrs(CAShapeLayer *layer, XMLNode *node)
         {
             for (NSString *tmp in node.parentNode.attributes)
             {
-                attr_from_raw_couple(tmp, node.parentNode.attributes[tmp], &key, &val);
-                if (key)
+                if ([tmp isEqualToString:@"style"])
                 {
-                    if ([key isEqualToString:@"transform"])
+                    NSDictionary *dict=attrs_from_style_str(node.attributes[@"style"]);
+                    for (NSString *style in dict)
                     {
-                        [trans addObject:val];
-                    }else
+                        attr_from_raw_couple(style, dict[style], &key, &val);
+                        if (key)
+                        {
+                            if ([key isEqualToString:@"transform"])
+                            {
+                                [trans addObject:val];
+                            }else
+                            {
+                                [layer setValue:val forKey:key];
+                            }
+                        }
+                    }
+                }else
+                {
+                    attr_from_raw_couple(tmp, node.attributes[tmp], &key, &val);
+                    if (key)
                     {
-                        [layer setValue:val forKey:key];
+                        if ([key isEqualToString:@"transform"])
+                        {
+                            [trans addObject:val];
+                        }else
+                        {
+                            [layer setValue:val forKey:key];
+                        }
                     }
                 }
             }
@@ -371,7 +543,7 @@ CAShapeLayer *layer_from_rect_node(XMLNode *node)
 
 CAShapeLayer *layer_from_circle_node(XMLNode *node)
 {
-    UIBezierPath *path=[UIBezierPath bezierPathWithOvalInRect:rect([node.attributes[@"cx"] floatValue]-[node.attributes[@"rx"] floatValue], [node.attributes[@"cy"] floatValue]-[node.attributes[@"ry"] floatValue], [node.attributes[@"r"] floatValue]*2, [node.attributes[@"r"] floatValue]*2)];
+    UIBezierPath *path=[UIBezierPath bezierPathWithArcCenter:point([node.attributes[@"cx"] floatValue], [node.attributes[@"cy"] floatValue]) radius:[node.attributes[@"r"] floatValue] startAngle:0 endAngle:M_PI*2 clockwise:YES];
     CAShapeLayer *layer = [CAShapeLayer layer];
     layer.anchorPoint=CGPointZero;
     layer.position=CGPointZero;
@@ -547,6 +719,22 @@ NSArray *layers_from_node(XMLNode *node)
     {
         [self.view.layer addSublayer:layer];
     }
+    return;
+    UIBezierPath *b=[UIBezierPath bezierPath];
+    [b moveToPoint:CGPointZero];
+    for (int x=0; x<=50; ++x)
+    {
+        [b addLineToPoint:CGPointMake(x, sqrtf(2500-x*x))];
+    }
+    
+    CAShapeLayer *l=[CAShapeLayer layer];
+    l.backgroundColor=[UIColor yellowColor].CGColor;
+    [self.view.layer addSublayer:l];
+    l.frame=CGRectMake(20, 20, 60, 60);
+    l.path=b.CGPath;
+    l.strokeColor=[UIColor redColor].CGColor;
+    l.strokeStart=0.2;
+    l.transform=CATransform3DMakeScale(3, 3, 1);
 }
 
 - (void)viewDidLoad1
