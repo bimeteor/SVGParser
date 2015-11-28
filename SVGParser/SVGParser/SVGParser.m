@@ -323,14 +323,14 @@ static CATransform3D trans_from_trans_str(NSString *str)
                 float x;
                 [scan scanFloat:&x];
                 CATransform3D tt=CATransform3DIdentity;
-                tt.m12=tanf(x*M_PI/180);
+                tt.m21=tanf(x*M_PI/180);
                 t=CATransform3DConcat(tt, t);
             }else if ([tmp isEqualToString:@"skewY"])
             {
                 float y;
                 [scan scanFloat:&y];
                 CATransform3D tt=CATransform3DIdentity;
-                tt.m21=tanf(y*M_PI/180);
+                tt.m12=tanf(y*M_PI/180);
                 t=CATransform3DConcat(tt, t);
             }else if ([tmp isEqualToString:@"matrix"])
             {
@@ -339,13 +339,13 @@ static CATransform3D trans_from_trans_str(NSString *str)
                 scan.scanLocation+=1;
                 [scan scanDouble:&tt.m12];
                 scan.scanLocation+=1;
-                [scan scanDouble:&tt.m13];
-                scan.scanLocation+=1;
                 [scan scanDouble:&tt.m21];
                 scan.scanLocation+=1;
                 [scan scanDouble:&tt.m22];
                 scan.scanLocation+=1;
-                [scan scanDouble:&tt.m23];
+                [scan scanDouble:&tt.m41];
+                scan.scanLocation+=1;
+                [scan scanDouble:&tt.m42];
                 t=CATransform3DConcat(tt, t);
             }
             [scan scanUpToCharactersFromSet:[NSCharacterSet letterCharacterSet] intoString:nil];
@@ -415,11 +415,11 @@ static NSDictionary *attrs_from_style_str(NSString *str)
     NSMutableDictionary *dict=[NSMutableDictionary new];
     while (!scan.isAtEnd)
     {
-        [scan scanString:@" " intoString:nil];
+        [scan scanUpToCharactersFromSet:[NSCharacterSet letterCharacterSet] intoString:nil];
         BOOL flag=[scan scanUpToString:@":" intoString:&key];
         if (flag)
         {
-            [scan scanString:@" " intoString:nil];
+            scan.scanLocation+=1;
             [scan scanUpToString:@";" intoString:&val];
             dict[key]=val;
         }
