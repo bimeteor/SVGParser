@@ -36,13 +36,17 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    NSString *path=[[NSBundle mainBundle] pathForResource:@"basic6" ofType:@"svg"];
+    NSString *path=[[NSBundle mainBundle] pathForResource:@"basic7" ofType:@"svg"];
     XMLNode *node=[XMLParser nodeWithString:[NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil]];
     NSArray *arr=layers_from_node(node);
     for (CALayer *layer in arr)
     {
-        [self.view.layer addSublayer:layer];
+        if (![layer isKindOfClass:[CAGradientLayer class]])
+        {
+            [self.view.layer addSublayer:layer];
+        }
     }
+    
     return;
     UIBezierPath *b=[UIBezierPath bezierPath];
     [b moveToPoint:CGPointZero];

@@ -8,6 +8,7 @@
 
 #import "SVGParser.h"
 #import "UIView+Addition.h"
+#import "CALayer+Addition.h"
 
 typedef NS_ENUM(NSUInteger, SVGNodeType)
 {
@@ -370,14 +371,20 @@ static void attr_from_raw_couple_str(NSString *key1, NSString *val1, NSString **
     }else if ([key1 isEqualToString:@"opacity"])
     {
         *key2=@"opacity",*val2=val1;
-    }else if ([key1 isEqualToString:@"fill"])
+    }else if ([key1 isEqualToString:@"fill"]||[key1 isEqualToString:@"stroke"])
     {
-        *key2=@"fillColor";
-        *val2=(__bridge id)color_from_color_str(val1).CGColor;
-    }else if ([key1 isEqualToString:@"stroke"])
-    {
-        *key2=@"strokeColor";
-        *val2=(__bridge id)color_from_color_str(val1).CGColor;
+        if ([val1 hasPrefix:@"url"])
+        {
+            NSScanner *scan=[NSScanner scannerWithString:val1];
+            [scan scanUpToString:@"#" intoString:nil];
+            scan.scanLocation+=1;
+            [scan scanUpToString:@")" intoString:(NSString**)val2];
+            *key2=@"linearGradientName";
+        }else
+        {
+            *key2=[key1 stringByAppendingString:@"Color"];
+            *val2=(__bridge id)color_from_color_str(val1).CGColor;
+        }
     }else if ([key1 isEqualToString:@"fill-rule"])
     {
         if ([val1 isEqualToString:@"evenodd"])
@@ -406,7 +413,6 @@ static void attr_from_raw_couple_str(NSString *key1, NSString *val1, NSString **
         *key2=@"font",*val2=val1;
     }
 }
-
 
 static NSDictionary *attrs_from_style_str(NSString *str)
 {
@@ -607,6 +613,57 @@ CAShapeLayer *layer_from_polygon_node(XMLNode *node)
     return layer;
 }
 
+static CAGradientLayer *layer_from_linear_gradient_node(XMLNode*node)
+{
+    CAGradientLayer *layer=[CAGradientLayer layer];
+    layer.name=node.attributes[@"id"];
+    layer.startPoint=CGPointMake([node.attributes[@"x1"] floatValue]/100, [node.attributes[@"y1"] floatValue]/100);
+    layer.endPoint=node.attributes[@"x2"]? CGPointMake([node.attributes[@"x2"] floatValue]/100, [node.attributes[@"y2"] floatValue]/100): CGPointMake(1, 0);
+    NSMutableArray *colors=[NSMutableArray new];
+    NSMutableArray *locs=[NSMutableArray new];
+    for (XMLNode *chd in node.childNodes)
+    {
+        NSString *offset=chd.attributes[@"offset"];
+        if (offset)
+        {
+            [locs addObject:@(offset.floatValue/100)];
+        }
+        NSString *color=chd.attributes[@"stop-color"];
+        if (color)
+        {
+            UIColor *color=color_from_color_str(chd.attributes[@"stop-color"]);
+            if (color)
+            {
+                [colors addObject:(__bridge id)color.CGColor];
+            }
+        }else
+        {
+            NSString *style=chd.attributes[@"style"];
+            if (style)
+            {
+                NSDictionary *dict=attrs_from_style_str(style);
+                if (dict[@"stop-color"])
+                {
+                    UIColor *color=color_from_color_str(dict[@"stop-color"]);
+                    if (color)
+                    {
+                        [colors addObject:(__bridge id)color.CGColor];
+                    }
+                }
+            }
+        }
+    }
+    if (colors.count>0)
+    {
+        layer.colors=colors;
+    }
+    if (locs.count>0)
+    {
+        layer.locations=locs;
+    }
+    return layer;
+}
+
 CATextLayer *layer_from_text_node(XMLNode *node)
 {
     CATextLayer *layer=[CATextLayer layer];
@@ -616,37 +673,6 @@ CATextLayer *layer_from_text_node(XMLNode *node)
     layer.string=node.value;
     layer.frame=CGRectMake([node.attributes[@"x"] floatValue], [node.attributes[@"y"] floatValue], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);//TODO:frank
     //shape_by_attrs(layer, node);//TODO:frank
-    return layer;
-}
-
-CALayer *layer_from_node(XMLNode *node)
-{
-    CALayer *layer = nil;
-    if ([node.name isEqualToString:@"path"])
-    {
-        layer=layer_from_path_node(node);
-    }else if ([node.name isEqualToString:@"line"])
-    {
-        layer=layer_from_line_node(node);
-    }else if ([node.name isEqualToString:@"rect"])
-    {
-        layer=layer_from_rect_node(node);
-    }else if ([node.name isEqualToString:@"circle"])
-    {
-        layer=layer_from_circle_node(node);
-    }else if ([node.name isEqualToString:@"ellipse"])
-    {
-        layer=layer_from_ellipse_node(node);
-    }else if ([node.name isEqualToString:@"polyline"])
-    {
-        layer=layer_from_polyline_node(node);
-    }else if ([node.name isEqualToString:@"polygon"])
-    {
-        layer=layer_from_polygon_node(node);
-    }else if ([node.name isEqualToString:@"text"])
-    {
-        layer=layer_from_text_node(node);
-    }
     return layer;
 }
 
@@ -676,7 +702,10 @@ static void add_layers_from_node(XMLNode *node, NSMutableArray *arr)
     }else if ([node.name isEqualToString:@"text"])
     {
         [arr addObject:layer_from_text_node(node)];
-    }else if ([node.name isEqualToString:@"svg"]||[node.name isEqualToString:@"g"])
+    }else if ([node.name isEqualToString:@"linearGradient"])
+    {
+        [arr addObject:layer_from_linear_gradient_node(node)];
+    }else if ([node.name isEqualToString:@"svg"]||[node.name isEqualToString:@"g"]||[node.name isEqualToString:@"defs"])
     {
         for (XMLNode *tmp in node.childNodes)
         {
@@ -689,5 +718,16 @@ NSArray *layers_from_node(XMLNode *node)
 {
     NSMutableArray *arr=[NSMutableArray new];
     add_layers_from_node(node, arr);
+    [arr enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        if ([obj linearGradientName])
+        {
+            [arr enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj1, NSUInteger idx1, BOOL *stop1) {
+                if ([[obj1 name] isEqualToString:[obj linearGradientName]])
+                {
+                    [obj1 setMask:obj];
+                }
+            }];
+        }
+    }];
     return arr.count>0? arr:nil;
 }
