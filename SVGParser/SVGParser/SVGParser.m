@@ -83,8 +83,7 @@ static UIBezierPath *path_from_d_str(NSString *str)
     scan.charactersToBeSkipped=scanSkipCharacters;
     UIBezierPath *path = [UIBezierPath bezierPath];
     float last_anchor_x=0, last_anchor_y=0;
-    NSString *last_cmd=nil;
-    NSString *cmd;
+    NSString *last_cmd, *cmd;
     BOOL flag=[scan scanCharactersFromSet:[NSCharacterSet letterCharacterSet] intoString:&cmd];
     while (!scan.atEnd)
     {
