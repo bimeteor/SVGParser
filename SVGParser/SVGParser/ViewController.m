@@ -63,25 +63,32 @@
         
         NSString *path=[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"basic%li", i] ofType:@"svg"];
         XMLNode *node=[XMLParser nodeWithString:[NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil]];
-        NSArray *arr=layers_from_node(node);
+        NSArray *arr=layers_from_node(node);NSLog(@"%li",i);
         for (CALayer *layer in arr)
         {
-            if (![layer isKindOfClass:[CAGradientLayer class]])
-            {
-                [view.layer addSublayer:layer];
-            }
+            [view.layer addSublayer:layer];
         }
     }
-    
-    /*
+    //return;
     CAShapeLayer *l=[CAShapeLayer layer];
-    l.backgroundColor=[UIColor yellowColor].CGColor;
-    [self.view.layer addSublayer:l];
-    l.frame=CGRectMake(20, 20, 60, 60);
-    l.path=b.CGPath;
-    l.strokeColor=[UIColor redColor].CGColor;
-    l.strokeStart=0.2;
-    l.transform=CATransform3DMakeScale(3, 3, 1);*/
+    l.backgroundColor=[UIColor clearColor].CGColor;
+    //
+    l.frame=CGRectMake(0, 0, 300, 300);
+    UIBezierPath *path=[UIBezierPath bezierPathWithRect:CGRectMake(20, 30, 100, 300)];
+    l.path=path.CGPath;
+    l.strokeColor=[UIColor greenColor].CGColor;
+    l.fillColor=[UIColor purpleColor].CGColor;
+    l.lineWidth=2;
+    
+    CAGradientLayer *gradient=[CAGradientLayer layer];
+    gradient.frame=CGRectMake(0, 0, 300, 300);
+    gradient.locations=@[@0.2, @0.8];
+    gradient.startPoint=CGPointMake(0, 0);
+    gradient.endPoint=CGPointMake(0, 1);
+    gradient.colors=@[(__bridge id)[UIColor redColor].CGColor, (__bridge id)[UIColor blueColor].CGColor];
+    [self.view.layer addSublayer:gradient];
+    //[self.view.layer addSublayer:l];
+    gradient.mask=l;
 }
 
 - (void)viewDidLoad1

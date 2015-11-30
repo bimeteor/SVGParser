@@ -82,6 +82,7 @@ static UIBezierPath *path_from_d_str(NSString *str)
     NSScanner *scan=[NSScanner scannerWithString:str];
     scan.charactersToBeSkipped=scanSkipCharacters;
     UIBezierPath *path = [UIBezierPath bezierPath];
+    [path moveToPoint:CGPointZero];
     float last_anchor_x=0, last_anchor_y=0;
     NSString *last_cmd, *cmd;
     BOOL flag=[scan scanCharactersFromSet:[NSCharacterSet letterCharacterSet] intoString:&cmd];
@@ -592,6 +593,8 @@ CAShapeLayer *layer_from_polygon_node(XMLNode *node)
 static CAGradientLayer *layer_from_linear_gradient_node(XMLNode*node)
 {
     CAGradientLayer *layer=[CAGradientLayer layer];
+    layer.anchorPoint=CGPointZero;
+    layer.position=CGPointZero;
     layer.name=node.attributes[@"id"];
     layer.startPoint=CGPointMake([node.attributes[@"x1"] floatValue]/100, [node.attributes[@"y1"] floatValue]/100);
     layer.endPoint=node.attributes[@"x2"]? CGPointMake([node.attributes[@"x2"] floatValue]/100, [node.attributes[@"y2"] floatValue]/100): CGPointMake(1, 0);
@@ -698,13 +701,32 @@ NSArray *layers_from_node(XMLNode *node)
     });
     NSMutableArray *arr=[NSMutableArray new];
     add_layers_from_node(node, arr);
-    [arr enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    NSIndexSet *set=[arr indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        return [obj isKindOfClass:[CAGradientLayer class]];
+    }];
+    if (set.count>0)
+    {
+        NSArray *sub=[arr objectsAtIndexes:set];
+        [arr removeObjectsAtIndexes:set];
+        [arr insertObjects:sub atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, sub.count)]];
+    }
+    
+    [arr enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         if ([obj linearGradientName])
         {
-            [arr enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj1, NSUInteger idx1, BOOL *stop1) {
+            [arr enumerateObjectsUsingBlock:^(id obj1, NSUInteger idx1, BOOL *stop1) {
                 if ([[obj1 name] isEqualToString:[obj linearGradientName]])
                 {
-                    [obj1 setMask:obj];
+                    UIBezierPath *path=[UIBezierPath bezierPathWithCGPath:[obj path]];
+                    CGRect re=path.bounds;
+                    [obj1 setFrame:path.bounds];
+                    CATransform3D t=[(CALayer*)obj transform];
+                    CGAffineTransform f=CATransform3DGetAffineTransform(t);
+                    [path applyTransform:f];
+                    CGRect rrr=path.bounds;
+                    [(CALayer*)obj setTransform:CATransform3DIdentity];
+                    [(CALayer*)obj1 setTransform:t];
+                    //[obj1 setMask:obj];
                 }
             }];
         }
