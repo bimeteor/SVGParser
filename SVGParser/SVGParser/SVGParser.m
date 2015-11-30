@@ -21,7 +21,8 @@ typedef NS_ENUM(NSUInteger, SVGNodeType)
     SVGViewNodeType,
 };
 
-NSString *graphs_names[]={@"path", @"line", @"rect", @"circle", @"ellipse", @"polyline", @"polygon"};
+static NSString *graphs_names[]={@"path", @"line", @"rect", @"circle", @"ellipse", @"polyline", @"polygon"};
+static NSCharacterSet *scanSkipCharacters;
 
 #pragma mark - attrs from string
 
@@ -60,10 +61,10 @@ static UIColor *color_from_color_str(NSString *str)
     UIColor *color=color_from_name(str);
     if (!color)
     {
-        NSScanner *scan=[NSScanner scannerWithString:str];
-        [scan scanUpToCharactersFromSet:[NSCharacterSet alphanumericCharacterSet] intoString:nil];
-        if (!scan.isAtEnd)
+        if ([str hasPrefix:@"#"])
         {
+            NSScanner *scan=[NSScanner scannerWithString:str];
+            scan.scanLocation=1;
             unsigned num;
             [scan scanHexInt:&num];
             color=color_rgb(num);
@@ -79,208 +80,186 @@ static UIColor *color_from_color_str(NSString *str)
 static UIBezierPath *path_from_d_str(NSString *str)
 {
     NSScanner *scan=[NSScanner scannerWithString:str];
+    scan.charactersToBeSkipped=scanSkipCharacters;
     UIBezierPath *path = [UIBezierPath bezierPath];
     float last_anchor_x=0, last_anchor_y=0;
+    NSString *last_cmd=nil;
+    NSString *cmd;
+    BOOL flag=[scan scanCharactersFromSet:[NSCharacterSet letterCharacterSet] intoString:&cmd];
     while (!scan.atEnd)
     {
-        NSString *ch1;
-        BOOL flag=[scan scanCharactersFromSet:[NSCharacterSet letterCharacterSet] intoString:&ch1];
-        if (flag)
+        if (!flag)
         {
-            if ([ch1 isEqualToString:@"M"])
+            if ([last_cmd isEqualToString:@"M"])
             {
-                float x, y;
-                [scan scanFloat:&x];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y];
-                [path moveToPoint:CGPointMake(x, y)];
-            }else if ([ch1 isEqualToString:@"m"])
+                cmd=@"L";
+            }else if ([last_cmd isEqualToString:@"m"])
             {
-                float x, y;
-                [scan scanFloat:&x];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y];
-                [path moveToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y)];
-            }else if ([ch1 isEqualToString:@"L"])
+                cmd=@"l";
+            }else
             {
-                float x, y;
-                [scan scanFloat:&x];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y];
-                [path addLineToPoint:CGPointMake(x, y)];
-            }else if ([ch1 isEqualToString:@"l"])
-            {
-                float x, y;
-                [scan scanFloat:&x];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y];
-                [path addLineToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y)];
-            }else if ([ch1 isEqualToString:@"H"])
-            {
-                float x;
-                [scan scanFloat:&x];
-                [path addLineToPoint:CGPointMake(x, path.currentPoint.y)];
-            }else if ([ch1 isEqualToString:@"h"])
-            {
-                float x;
-                [scan scanFloat:&x];
-                [path addLineToPoint:CGPointMake(x+path.currentPoint.x, path.currentPoint.y)];
-            }else if ([ch1 isEqualToString:@"V"])
-            {
-                float y;
-                [scan scanFloat:&y];
-                [path addLineToPoint:CGPointMake(path.currentPoint.x, y)];
-            }else if ([ch1 isEqualToString:@"v"])
-            {
-                float y;
-                [scan scanFloat:&y];
-                [path addLineToPoint:CGPointMake(path.currentPoint.x, y+path.currentPoint.y)];
-            }else if ([ch1 isEqualToString:@"C"])
-            {
-                float x1, y1, x2, y2, x, y;
-                [scan scanFloat:&x1];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y1];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&x2];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y2];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&x];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y];
-                last_anchor_x=x2, last_anchor_y=y2;
-                [path addCurveToPoint:CGPointMake(x, y) controlPoint1:CGPointMake(x1, y1) controlPoint2:CGPointMake(x2, y2)];
-            }else if ([ch1 isEqualToString:@"c"])
-            {
-                float x1, y1, x2, y2, x, y;
-                [scan scanFloat:&x1];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y1];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&x2];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y2];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&x];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y];
-                last_anchor_x=x2+path.currentPoint.x, last_anchor_y=y2+path.currentPoint.y;
-                [path addCurveToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y) controlPoint1:CGPointMake(x1+path.currentPoint.x, y1+path.currentPoint.y) controlPoint2:CGPointMake(x2+path.currentPoint.x, y2+path.currentPoint.y)];
-            }else if ([ch1 isEqualToString:@"S"])
-            {
-                float x2, y2, x, y;
-                [scan scanFloat:&x2];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y2];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&x];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y];
-                float tmp_x=last_anchor_x, tmp_y=last_anchor_y;
-                last_anchor_x=x2, last_anchor_y=y2;
-                [path addCurveToPoint:CGPointMake(x, y) controlPoint1:CGPointMake(2*path.currentPoint.x-tmp_x, 2*path.currentPoint.y-tmp_y) controlPoint2:CGPointMake(x2, y2)];
-            }else if ([ch1 isEqualToString:@"s"])
-            {
-                float x2, y2, x, y;
-                [scan scanFloat:&x2];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y2];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&x];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y];
-                float tmp_x=last_anchor_x, tmp_y=last_anchor_y;
-                last_anchor_x=x2+path.currentPoint.x, last_anchor_y=y2+path.currentPoint.y;
-                [path addCurveToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y) controlPoint1:CGPointMake(2*path.currentPoint.x-tmp_x, 2*path.currentPoint.y-tmp_y) controlPoint2:CGPointMake(x2+path.currentPoint.x, y2+path.currentPoint.y)];
-            }else if ([ch1 isEqualToString:@"Q"])
-            {
-                float x1, y1, x, y;
-                [scan scanFloat:&x1];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y1];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&x];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y];
-                last_anchor_x=x1, last_anchor_y=y1;
-                [path addQuadCurveToPoint:CGPointMake(x, y) controlPoint:CGPointMake(x1, y1)];
-            }else if ([ch1 isEqualToString:@"q"])
-            {
-                float x1, y1, x, y;
-                [scan scanFloat:&x1];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y1];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&x];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y];
-                last_anchor_x=x1+path.currentPoint.x, last_anchor_y=y1+path.currentPoint.y;
-                [path addQuadCurveToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y) controlPoint:CGPointMake(x1+path.currentPoint.x, y1+path.currentPoint.y)];
-            }else if ([ch1 isEqualToString:@"T"])
-            {
-                float x, y;
-                [scan scanFloat:&x];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y];
-                float tmp_x=last_anchor_x, tmp_y=last_anchor_y;
-                last_anchor_x=x, last_anchor_y=y;
-                [path addQuadCurveToPoint:CGPointMake(x, y) controlPoint:CGPointMake(2*path.currentPoint.x-tmp_x, 2*path.currentPoint.y-tmp_y)];
-            }else if ([ch1 isEqualToString:@"t"])
-            {
-                float x, y;
-                [scan scanFloat:&x];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y];
-                float tmp_x=last_anchor_x, tmp_y=last_anchor_y;
-                last_anchor_x=x+path.currentPoint.x, last_anchor_y=y+path.currentPoint.y;
-                [path addQuadCurveToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y) controlPoint:CGPointMake(2*path.currentPoint.x-tmp_x, 2*path.currentPoint.y-tmp_y)];
-            }/*else if ([ch1 isEqualToString:@"A"])
-            {
-                float rx, ry, big, clock, x, y;
-                [scan scanFloat:&rx];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&ry];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:NULL];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&big];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&clock];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&x];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y];
-                float cx=path.currentPoint.x+(((y<=path.currentPoint.y?clock:!clock)?big:!big)?1:-1)*(rx+ry)/2*fabs(x-path.currentPoint.x)/sqrtf(powf(x-path.currentPoint.x, 2)+powf(y-path.currentPoint.y, 2));
-                float cy=path.currentPoint.y+(y-path.currentPoint.y)*(cx-path.currentPoint.x)/(x-path.currentPoint.x);
-                [path addArcWithCenter:CGPointMake(cx, cy) radius:(rx+ry)/2 startAngle:atanf((path.currentPoint.y-cy)/(path.currentPoint.x-cx)) endAngle:atanf((y-cy)/(x-cx)) clockwise:clock];
-            }else if ([ch1 isEqualToString:@"a"])
-            {
-                float rx, ry, big, clock, x, y;
-                [scan scanFloat:&rx];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&ry];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:NULL];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&big];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&clock];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&x];
-                [scan scanString:@"," intoString:nil];
-                [scan scanFloat:&y];
-                float cx=path.currentPoint.x+(((y<=0?clock:!clock)?big:!big)?1:-1)*(rx+ry)/2*fabs(x)/sqrtf(powf(x, 2)+powf(y, 2));
-                float cy=path.currentPoint.y+y*(cx-path.currentPoint.x)/x;
-                [path addArcWithCenter:CGPointMake(cx, cy) radius:(rx+ry)/2 startAngle:atanf((path.currentPoint.y-cy)/(path.currentPoint.x-cx)) endAngle:atanf((y+path.currentPoint.y-cy)/(x+path.currentPoint.x-cx)) clockwise:clock];
-            }*/else if ([ch1 isEqualToString:@"Z"]||[ch1 isEqualToString:@"z"])
-            {
-                [path closePath];
+                cmd=last_cmd;
             }
-        }else
-        {
-            break;
         }
+        if ([cmd isEqualToString:@"M"])
+        {
+            float x, y;
+            [scan scanFloat:&x];
+            [scan scanFloat:&y];
+            [path moveToPoint:CGPointMake(x, y)];
+        }else if ([cmd isEqualToString:@"m"])
+        {
+            float x, y;
+            [scan scanFloat:&x];
+            [scan scanFloat:&y];
+            [path moveToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y)];
+        }else if ([cmd isEqualToString:@"L"])
+        {
+            float x, y;
+            [scan scanFloat:&x];
+            [scan scanFloat:&y];
+            [path addLineToPoint:CGPointMake(x, y)];
+        }else if ([cmd isEqualToString:@"l"])
+        {
+            float x, y;
+            [scan scanFloat:&x];
+            [scan scanFloat:&y];
+            [path addLineToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y)];
+        }else if ([cmd isEqualToString:@"H"])
+        {
+            float x;
+            [scan scanFloat:&x];
+            [path addLineToPoint:CGPointMake(x, path.currentPoint.y)];
+        }else if ([cmd isEqualToString:@"h"])
+        {
+            float x;
+            [scan scanFloat:&x];
+            [path addLineToPoint:CGPointMake(x+path.currentPoint.x, path.currentPoint.y)];
+        }else if ([cmd isEqualToString:@"V"])
+        {
+            float y;
+            [scan scanFloat:&y];
+            [path addLineToPoint:CGPointMake(path.currentPoint.x, y)];
+        }else if ([cmd isEqualToString:@"v"])
+        {
+            float y;
+            [scan scanFloat:&y];
+            [path addLineToPoint:CGPointMake(path.currentPoint.x, y+path.currentPoint.y)];
+        }else if ([cmd isEqualToString:@"C"])
+        {
+            float x1, y1, x2, y2, x, y;
+            [scan scanFloat:&x1];
+            [scan scanFloat:&y1];
+            [scan scanFloat:&x2];
+            [scan scanFloat:&y2];
+            [scan scanFloat:&x];
+            [scan scanFloat:&y];
+            last_anchor_x=x2, last_anchor_y=y2;
+            [path addCurveToPoint:CGPointMake(x, y) controlPoint1:CGPointMake(x1, y1) controlPoint2:CGPointMake(x2, y2)];
+        }else if ([cmd isEqualToString:@"c"])
+        {
+            float x1, y1, x2, y2, x, y;
+            [scan scanFloat:&x1];
+            [scan scanFloat:&y1];
+            [scan scanFloat:&x2];
+            [scan scanFloat:&y2];
+            [scan scanFloat:&x];
+            [scan scanFloat:&y];
+            last_anchor_x=x2+path.currentPoint.x, last_anchor_y=y2+path.currentPoint.y;
+            [path addCurveToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y) controlPoint1:CGPointMake(x1+path.currentPoint.x, y1+path.currentPoint.y) controlPoint2:CGPointMake(x2+path.currentPoint.x, y2+path.currentPoint.y)];
+        }else if ([cmd isEqualToString:@"S"])
+        {
+            float x2, y2, x, y;
+            [scan scanFloat:&x2];
+            [scan scanFloat:&y2];
+            [scan scanFloat:&x];
+            [scan scanFloat:&y];
+            float tmp_x=last_anchor_x, tmp_y=last_anchor_y;
+            last_anchor_x=x2, last_anchor_y=y2;
+            [path addCurveToPoint:CGPointMake(x, y) controlPoint1:CGPointMake(2*path.currentPoint.x-tmp_x, 2*path.currentPoint.y-tmp_y) controlPoint2:CGPointMake(x2, y2)];
+        }else if ([cmd isEqualToString:@"s"])
+        {
+            float x2, y2, x, y;
+            [scan scanFloat:&x2];
+            [scan scanFloat:&y2];
+            [scan scanFloat:&x];
+            [scan scanFloat:&y];
+            float tmp_x=last_anchor_x, tmp_y=last_anchor_y;
+            last_anchor_x=x2+path.currentPoint.x, last_anchor_y=y2+path.currentPoint.y;
+            [path addCurveToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y) controlPoint1:CGPointMake(2*path.currentPoint.x-tmp_x, 2*path.currentPoint.y-tmp_y) controlPoint2:CGPointMake(x2+path.currentPoint.x, y2+path.currentPoint.y)];
+        }else if ([cmd isEqualToString:@"Q"])
+        {
+            float x1, y1, x, y;
+            [scan scanFloat:&x1];
+            [scan scanFloat:&y1];
+            [scan scanFloat:&x];
+            [scan scanFloat:&y];
+            last_anchor_x=x1, last_anchor_y=y1;
+            [path addQuadCurveToPoint:CGPointMake(x, y) controlPoint:CGPointMake(x1, y1)];
+        }else if ([cmd isEqualToString:@"q"])
+        {
+            float x1, y1, x, y;
+            [scan scanFloat:&x1];
+            [scan scanFloat:&y1];
+            [scan scanFloat:&x];
+            [scan scanFloat:&y];
+            last_anchor_x=x1+path.currentPoint.x, last_anchor_y=y1+path.currentPoint.y;
+            [path addQuadCurveToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y) controlPoint:CGPointMake(x1+path.currentPoint.x, y1+path.currentPoint.y)];
+        }else if ([cmd isEqualToString:@"T"])
+        {
+            float x, y;
+            [scan scanFloat:&x];
+            [scan scanFloat:&y];
+            float tmp_x=last_anchor_x, tmp_y=last_anchor_y;
+            last_anchor_x=x, last_anchor_y=y;
+            [path addQuadCurveToPoint:CGPointMake(x, y) controlPoint:CGPointMake(2*path.currentPoint.x-tmp_x, 2*path.currentPoint.y-tmp_y)];
+        }else if ([cmd isEqualToString:@"t"])
+        {
+            float x, y;
+            [scan scanFloat:&x];
+            [scan scanFloat:&y];
+            float tmp_x=last_anchor_x, tmp_y=last_anchor_y;
+            last_anchor_x=x+path.currentPoint.x, last_anchor_y=y+path.currentPoint.y;
+            [path addQuadCurveToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y) controlPoint:CGPointMake(2*path.currentPoint.x-tmp_x, 2*path.currentPoint.y-tmp_y)];
+        }else if ([cmd isEqualToString:@"A"]||[cmd isEqualToString:@"a"])
+        {
+            for (int i=0; i<7; ++i)
+            {
+                [scan scanFloat:NULL];
+            }
+        }
+        /*else if ([cmd isEqualToString:@"A"])
+          {
+          float rx, ry, big, clock, x, y;
+          [scan scanFloat:&rx];
+          [scan scanFloat:&ry];
+          [scan scanFloat:NULL];
+          [scan scanFloat:&big];
+          [scan scanFloat:&clock];
+          [scan scanFloat:&x];
+          [scan scanFloat:&y];
+          float cx=path.currentPoint.x+(((y<=path.currentPoint.y?clock:!clock)?big:!big)?1:-1)*(rx+ry)/2*fabs(x-path.currentPoint.x)/sqrtf(powf(x-path.currentPoint.x, 2)+powf(y-path.currentPoint.y, 2));
+          float cy=path.currentPoint.y+(y-path.currentPoint.y)*(cx-path.currentPoint.x)/(x-path.currentPoint.x);
+          [path addArcWithCenter:CGPointMake(cx, cy) radius:(rx+ry)/2 startAngle:atanf((path.currentPoint.y-cy)/(path.currentPoint.x-cx)) endAngle:atanf((y-cy)/(x-cx)) clockwise:clock];
+          }else if ([cmd isEqualToString:@"a"])
+          {
+          float rx, ry, big, clock, x, y;
+          [scan scanFloat:&rx];
+          [scan scanFloat:&ry];
+          [scan scanFloat:NULL];
+          [scan scanFloat:&big];
+          [scan scanFloat:&clock];
+          [scan scanFloat:&x];
+          [scan scanFloat:&y];
+          float cx=path.currentPoint.x+(((y<=0?clock:!clock)?big:!big)?1:-1)*(rx+ry)/2*fabs(x)/sqrtf(powf(x, 2)+powf(y, 2));
+          float cy=path.currentPoint.y+y*(cx-path.currentPoint.x)/x;
+          [path addArcWithCenter:CGPointMake(cx, cy) radius:(rx+ry)/2 startAngle:atanf((path.currentPoint.y-cy)/(path.currentPoint.x-cx)) endAngle:atanf((y+path.currentPoint.y-cy)/(x+path.currentPoint.x-cx)) clockwise:clock];
+          }*/else if ([cmd isEqualToString:@"Z"]||[cmd isEqualToString:@"z"])
+          {
+              [path closePath];
+          }
+        last_cmd=cmd;
+        flag=[scan scanCharactersFromSet:[NSCharacterSet letterCharacterSet] intoString:&cmd];
     }
     return path;
 }
@@ -567,16 +546,15 @@ CAShapeLayer *layer_from_ellipse_node(XMLNode *node)
 CAShapeLayer *layer_from_polyline_node(XMLNode *node)
 {
     NSScanner *scan=[NSScanner scannerWithString:node.attributes[@"points"]];
+    scan.charactersToBeSkipped=scanSkipCharacters;
     CGPoint point;
     [scan scanDouble:&point.x];
-    scan.scanLocation+=1;
     [scan scanDouble:&point.y];
     UIBezierPath *path=[UIBezierPath bezierPath];
     [path moveToPoint:point];
     while (!scan.atEnd)
     {
         [scan scanDouble:&point.x];
-        scan.scanLocation+=1;
         [scan scanDouble:&point.y];
         [path addLineToPoint:point];
     }
@@ -591,16 +569,15 @@ CAShapeLayer *layer_from_polyline_node(XMLNode *node)
 CAShapeLayer *layer_from_polygon_node(XMLNode *node)
 {
     NSScanner *scan=[NSScanner scannerWithString:node.attributes[@"points"]];
+    scan.charactersToBeSkipped=scanSkipCharacters;
     CGPoint point;
     [scan scanDouble:&point.x];
-    scan.scanLocation+=1;
     [scan scanDouble:&point.y];
     UIBezierPath *path=[UIBezierPath bezierPath];
     [path moveToPoint:point];
     while (!scan.atEnd)
     {
         [scan scanDouble:&point.x];
-        scan.scanLocation+=1;
         [scan scanDouble:&point.y];
         [path addLineToPoint:point];
     }
@@ -716,6 +693,10 @@ static void add_layers_from_node(XMLNode *node, NSMutableArray *arr)
 
 NSArray *layers_from_node(XMLNode *node)
 {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        scanSkipCharacters=[NSCharacterSet characterSetWithCharactersInString:@", "];
+    });
     NSMutableArray *arr=[NSMutableArray new];
     add_layers_from_node(node, arr);
     [arr enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {

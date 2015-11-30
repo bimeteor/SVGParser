@@ -13,9 +13,10 @@
 #import "XMLParser.h"
 #import "UIView+Addition.h"
 
-@interface ViewController ()
+@interface ViewController ()<UIScrollViewDelegate>
 {
     NSMutableDictionary *_dict;
+    UIScrollView *_scroll;
 }
 @end
 
@@ -33,28 +34,46 @@
     }
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    long index=ceilf(scrollView.contentOffset.x/scrollView.width);
+    NSLog(@"%li", index);
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    NSString *path=[[NSBundle mainBundle] pathForResource:@"basic7" ofType:@"svg"];
-    XMLNode *node=[XMLParser nodeWithString:[NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil]];
-    NSArray *arr=layers_from_node(node);
-    for (CALayer *layer in arr)
+    
+    NSScanner *scan=[NSScanner scannerWithString:@"a b c"];
+    NSString *ch1;
+    scan.charactersToBeSkipped=[NSCharacterSet characterSetWithCharactersInString:@", "];
+    BOOL flag=[scan scanCharactersFromSet:[NSCharacterSet letterCharacterSet] intoString:&ch1];
+    
+    _scroll=[[UIScrollView alloc] initWithFrame:self.view.bounds];
+    [self.view addSubview:_scroll];
+    _scroll.pagingEnabled=YES;
+    _scroll.delegate=self;
+    const long count=8;
+    _scroll.contentSize=CGSizeMake(self.view.width*(count+1), self.view.height);
+    for (long i=count; i>=0; --i)
     {
-        if (![layer isKindOfClass:[CAGradientLayer class]])
+        UIView *view=[[UIView alloc] initWithFrame:self.view.bounds];
+        [_scroll addSubview:view];
+        view.left=self.view.width*(count-i);
+        
+        NSString *path=[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"basic%li", i] ofType:@"svg"];
+        XMLNode *node=[XMLParser nodeWithString:[NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil]];
+        NSArray *arr=layers_from_node(node);
+        for (CALayer *layer in arr)
         {
-            [self.view.layer addSublayer:layer];
+            if (![layer isKindOfClass:[CAGradientLayer class]])
+            {
+                [view.layer addSublayer:layer];
+            }
         }
     }
     
-    return;
-    UIBezierPath *b=[UIBezierPath bezierPath];
-    [b moveToPoint:CGPointZero];
-    for (int x=0; x<=50; ++x)
-    {
-        [b addLineToPoint:CGPointMake(x, sqrtf(2500-x*x))];
-    }
-    
+    /*
     CAShapeLayer *l=[CAShapeLayer layer];
     l.backgroundColor=[UIColor yellowColor].CGColor;
     [self.view.layer addSublayer:l];
@@ -62,7 +81,7 @@
     l.path=b.CGPath;
     l.strokeColor=[UIColor redColor].CGColor;
     l.strokeStart=0.2;
-    l.transform=CATransform3DMakeScale(3, 3, 1);
+    l.transform=CATransform3DMakeScale(3, 3, 1);*/
 }
 
 - (void)viewDidLoad1

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4B16F7BF1C0C1D3700083543 /* basic8.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4B16F7BE1C0C1D3700083543 /* basic8.svg */; };
 		4B3B38161C08D302006BE750 /* SVGParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3B38151C08D302006BE750 /* SVGParser.m */; };
 		4B3B38181C08E0AF006BE750 /* basic6.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4B3B38171C08E0AF006BE750 /* basic6.svg */; };
 		4B8BD4B51BFDA7D600663933 /* XMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8BD4B41BFDA7D600663933 /* XMLParser.m */; };
@@ -25,12 +26,13 @@
 		D6CE6B2F1BFB6D6E005DB3A7 /* UIView+NSLayoutExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B281BFB6D6E005DB3A7 /* UIView+NSLayoutExtension.m */; };
 		D6CE6B301BFB6D6E005DB3A7 /* UIView+Addition.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B2A1BFB6D6E005DB3A7 /* UIView+Addition.m */; };
 		D6CE6B311BFB6D6E005DB3A7 /* PathDrawingView.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B2C1BFB6D6E005DB3A7 /* PathDrawingView.m */; };
-		D6CE6B5A1BFE201A005DB3A7 /* basic.svg in Resources */ = {isa = PBXBuildFile; fileRef = D6CE6B591BFE201A005DB3A7 /* basic.svg */; };
+		D6CE6B5A1BFE201A005DB3A7 /* basic0.svg in Resources */ = {isa = PBXBuildFile; fileRef = D6CE6B591BFE201A005DB3A7 /* basic0.svg */; };
 		D6CE6B861C09B5F7005DB3A7 /* CALayer+Addition.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B851C09B5F7005DB3A7 /* CALayer+Addition.m */; };
 		D6CE6B881C09BB66005DB3A7 /* basic7.svg in Resources */ = {isa = PBXBuildFile; fileRef = D6CE6B871C09BB66005DB3A7 /* basic7.svg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4B16F7BE1C0C1D3700083543 /* basic8.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic8.svg; sourceTree = "<group>"; };
 		4B3B38141C08D302006BE750 /* SVGParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVGParser.h; sourceTree = "<group>"; };
 		4B3B38151C08D302006BE750 /* SVGParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVGParser.m; sourceTree = "<group>"; };
 		4B3B38171C08E0AF006BE750 /* basic6.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = basic6.svg; sourceTree = "<group>"; };
@@ -58,7 +60,7 @@
 		D6CE6B2A1BFB6D6E005DB3A7 /* UIView+Addition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Addition.m"; sourceTree = "<group>"; };
 		D6CE6B2B1BFB6D6E005DB3A7 /* PathDrawingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathDrawingView.h; sourceTree = "<group>"; };
 		D6CE6B2C1BFB6D6E005DB3A7 /* PathDrawingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PathDrawingView.m; sourceTree = "<group>"; };
-		D6CE6B591BFE201A005DB3A7 /* basic.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic.svg; sourceTree = "<group>"; };
+		D6CE6B591BFE201A005DB3A7 /* basic0.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic0.svg; sourceTree = "<group>"; };
 		D6CE6B841C09B5F7005DB3A7 /* CALayer+Addition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CALayer+Addition.h"; sourceTree = "<group>"; };
 		D6CE6B851C09B5F7005DB3A7 /* CALayer+Addition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CALayer+Addition.m"; sourceTree = "<group>"; };
 		D6CE6B871C09BB66005DB3A7 /* basic7.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic7.svg; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
 				4B3B38151C08D302006BE750 /* SVGParser.m */,
 				D6CE6B141BFB6B91005DB3A7 /* ViewController.h */,
 				D6CE6B151BFB6B91005DB3A7 /* ViewController.m */,
+				4B16F7BE1C0C1D3700083543 /* basic8.svg */,
 				D6CE6B871C09BB66005DB3A7 /* basic7.svg */,
 				4B3B38171C08E0AF006BE750 /* basic6.svg */,
 				4BD98B1D1C083CF50020EFB6 /* basic5.svg */,
@@ -117,7 +120,7 @@
 				4BD98B191C0769AC0020EFB6 /* basic3.svg */,
 				4BD98B171C0767D90020EFB6 /* basic2.svg */,
 				4BD98B151C07055B0020EFB6 /* basic1.svg */,
-				D6CE6B591BFE201A005DB3A7 /* basic.svg */,
+				D6CE6B591BFE201A005DB3A7 /* basic0.svg */,
 				D6CE6B251BFB6D5B005DB3A7 /*  dov_all_loading.svg */,
 				D6CE6B171BFB6B91005DB3A7 /* Main.storyboard */,
 				D6CE6B1A1BFB6B91005DB3A7 /* Assets.xcassets */,
@@ -196,7 +199,8 @@
 				4B3B38181C08E0AF006BE750 /* basic6.svg in Resources */,
 				D6CE6B881C09BB66005DB3A7 /* basic7.svg in Resources */,
 				4BD98B181C0767D90020EFB6 /* basic2.svg in Resources */,
-				D6CE6B5A1BFE201A005DB3A7 /* basic.svg in Resources */,
+				D6CE6B5A1BFE201A005DB3A7 /* basic0.svg in Resources */,
+				4B16F7BF1C0C1D3700083543 /* basic8.svg in Resources */,
 				4BD98B161C07055B0020EFB6 /* basic1.svg in Resources */,
 				4BD98B1E1C083CF50020EFB6 /* basic5.svg in Resources */,
 				D6CE6B261BFB6D5B005DB3A7 /*  dov_all_loading.svg in Resources */,
