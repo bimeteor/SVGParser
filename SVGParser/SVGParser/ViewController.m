@@ -21,7 +21,65 @@
 @end
 
 @implementation ViewController
-
+/*
+static void convert(x1, y1, x2, y2, fA, fS, rx, ry, phi)
+{
+    var cx,cy,theta1,delta_theta;
+    
+    if( rx == 0.0 || ry == 0.0 ) return -1;  // invalid arguments
+    
+    var  s_phi = Math.sin( phi );
+    var  c_phi = Math.cos( phi );
+    var  hd_x = ( x1 - x2 ) / 2.0;   // half diff of x
+    var  hd_y = ( y1 - y2 ) / 2.0;   // half diff of y
+    var  hs_x = ( x1 + x2 ) / 2.0;   // half sum of x
+    var  hs_y = ( y1 + y2 ) / 2.0;   // half sum of y
+    
+    // F6.5.1
+    var  x1_ = c_phi * hd_x + s_phi * hd_y;
+    var  y1_ = c_phi * hd_y - s_phi * hd_x;
+    
+    var  rxry = rx * ry;
+    var  rxy1_ = rx * y1_;
+    var  ryx1_ = ry * x1_;
+    var  sum_of_sq = rxy1_ * rxy1_ + ryx1_ * ryx1_;   // sum of square
+    var  coe = Math.sqrt( ( rxry * rxry - sum_of_sq ) / sum_of_sq );
+    if( fA == fS ) coe = -coe;
+    
+    // F6.5.2
+    var  cx_ = coe * rxy1_ / ry;
+    var  cy_ = -coe * ryx1_ / rx;
+    
+    // F6.5.3
+    cx = c_phi * cx_ - s_phi * cy_ + hs_x;
+    cy = s_phi * cx_ + c_phi * cy_ + hs_y;
+    
+    var  xcr1 = ( x1_ - cx_ ) / rx;
+    var  xcr2 = ( x1_ + cx_ ) / rx;
+    var  ycr1 = ( y1_ - cy_ ) / ry;
+    var  ycr2 = ( y1_ + cy_ ) / ry;
+    
+    // F6.5.5
+    theta1 = radian( 1.0, 0.0, xcr1, ycr1 );
+    
+    // F6.5.6
+    delta_theta = radian( xcr1, ycr1, -xcr2, -ycr2 );
+    var  PIx2 = Math.PI * 2.0;
+    while( delta_theta > PIx2 ) delta_theta -= PIx2;
+    while( delta_theta < 0.0 ) delta_theta += PIx2;
+    if( fS == false ) delta_theta -= PIx2;
+    
+    var outputObj = { // cx, cy, theta1, delta_theta
+        cx : cx,
+        cy : cy,
+        theta1 : theta1,
+        delta_theta : delta_theta
+    }
+    console.dir(outputObj);
+    
+    return outputObj;
+}
+*/
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
 {
     if (flag)
