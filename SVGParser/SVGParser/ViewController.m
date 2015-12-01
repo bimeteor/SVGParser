@@ -21,9 +21,83 @@
 @end
 
 @implementation ViewController
-/*
-static void convert(x1, y1, x2, y2, fA, fS, rx, ry, phi)
+
+// svg : [A | a] (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
+
+/* x1 y1 x2 y2 fA fS rx ry φ */
+static float radius(float ux, float uy, float vx, float vy)
 {
+    float  dot = ux * vx + uy * vy;
+    float  mod = sqrtf((ux * ux + uy * uy ) * ( vx * vx + vy * vy ) );
+    float  rad = acosf( dot / mod );
+    if( ux * vy - uy * vx < 0.0 ) rad = -rad;
+    return  rad;
+}
+
+//sample :  convert(200,200,300,200,1,1,50,50,0,{})
+static void convert(float x1, float y1, float x2, float y2, float fA, float fS, float rx, float ry, float phi, float *cx, float *cy, float *startAngle, float *angle)
+{
+    float cx1,cy1,theta1,delta_theta;
+    
+    if( rx == 0.0 || ry == 0.0 ) return;  // invalid arguments
+    
+    float  s_phi = sinf( phi );
+    float  c_phi = cosf( phi );
+    float  hd_x = ( x1 - x2 ) / 2.0;   // half diff of x
+    float  hd_y = ( y1 - y2 ) / 2.0;   // half diff of y
+    float  hs_x = ( x1 + x2 ) / 2.0;   // half sum of x
+    float  hs_y = ( y1 + y2 ) / 2.0;   // half sum of y
+    
+    // F6.5.1
+    float  x1_ = c_phi * hd_x + s_phi * hd_y;
+    float  y1_ = c_phi * hd_y - s_phi * hd_x;
+    
+    float  rxry = rx * ry;
+    float  rxy1_ = rx * y1_;
+    float  ryx1_ = ry * x1_;
+    float  sum_of_sq = rxy1_ * rxy1_ + ryx1_ * ryx1_;   // sum of square
+    float  coe = sqrtf( ( rxry * rxry - sum_of_sq ) / sum_of_sq );
+    if( fA == fS ) coe = -coe;
+    
+    // F6.5.2
+    float  cx_ = coe * rxy1_ / ry;
+    float  cy_ = -coe * ryx1_ / rx;
+    
+    // F6.5.3
+    cx1 = c_phi * cx_ - s_phi * cy_ + hs_x;
+    cy1 = s_phi * cx_ + c_phi * cy_ + hs_y;
+    
+    float  xcr1 = ( x1_ - cx_ ) / rx;
+    float  xcr2 = ( x1_ + cx_ ) / rx;
+    float  ycr1 = ( y1_ - cy_ ) / ry;
+    float  ycr2 = ( y1_ + cy_ ) / ry;
+    
+    // F6.5.5
+    theta1 = radius( 1.0, 0.0, xcr1, ycr1 );
+    
+    // F6.5.6
+    delta_theta = radius( xcr1, ycr1, -xcr2, -ycr2 );
+    float  PIx2 = M_PI * 2.0;
+    while( delta_theta > PIx2 ) delta_theta -= PIx2;
+    while( delta_theta < 0.0 ) delta_theta += PIx2;
+    if( fS == false ) delta_theta -= PIx2;
+    *cx=cx1, *cy=cy1, *startAngle=theta1, *angle=delta_theta;
+}
+
+/*
+ // svg : [A | a] (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
+ 
+ // x1 y1 x2 y2 fA fS rx ry φ
+function  radian( ux, uy, vx, vy ) {
+    var  dot = ux * vx + uy * vy;
+    var  mod = Math.sqrt( ( ux * ux + uy * uy ) * ( vx * vx + vy * vy ) );
+    var  rad = Math.acos( dot / mod );
+    if( ux * vy - uy * vx < 0.0 ) rad = -rad;
+    return  rad;
+}
+//conversion_from_endpoint_to_center_parameterization
+//sample :  convert(200,200,300,200,1,1,50,50,0,{})
+function convert(x1, y1, x2, y2, fA, fS, rx, ry, phi) {
     var cx,cy,theta1,delta_theta;
     
     if( rx == 0.0 || ry == 0.0 ) return -1;  // invalid arguments
@@ -79,7 +153,8 @@ static void convert(x1, y1, x2, y2, fA, fS, rx, ry, phi)
     
     return outputObj;
 }
-*/
+ */
+
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
 {
     if (flag)
