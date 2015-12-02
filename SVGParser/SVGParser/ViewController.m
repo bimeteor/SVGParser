@@ -25,7 +25,7 @@
 // svg : [A | a] (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
 
 /* x1 y1 x2 y2 fA fS rx ry φ */
-static float radius(float ux, float uy, float vx, float vy)
+static float radian(float ux, float uy, float vx, float vy)
 {
     float  dot = ux * vx + uy * vy;
     float  mod = sqrtf((ux * ux + uy * uy ) * ( vx * vx + vy * vy ) );
@@ -48,7 +48,6 @@ static void convert(float x1, float y1, float x2, float y2, float fA, float fS, 
     float  hs_x = ( x1 + x2 ) / 2.0;   // half sum of x
     float  hs_y = ( y1 + y2 ) / 2.0;   // half sum of y
     
-    // F6.5.1
     float  x1_ = c_phi * hd_x + s_phi * hd_y;
     float  y1_ = c_phi * hd_y - s_phi * hd_x;
     
@@ -59,11 +58,9 @@ static void convert(float x1, float y1, float x2, float y2, float fA, float fS, 
     float  coe = sqrtf( ( rxry * rxry - sum_of_sq ) / sum_of_sq );
     if( fA == fS ) coe = -coe;
     
-    // F6.5.2
     float  cx_ = coe * rxy1_ / ry;
     float  cy_ = -coe * ryx1_ / rx;
     
-    // F6.5.3
     cx1 = c_phi * cx_ - s_phi * cy_ + hs_x;
     cy1 = s_phi * cx_ + c_phi * cy_ + hs_y;
     
@@ -72,88 +69,15 @@ static void convert(float x1, float y1, float x2, float y2, float fA, float fS, 
     float  ycr1 = ( y1_ - cy_ ) / ry;
     float  ycr2 = ( y1_ + cy_ ) / ry;
     
-    // F6.5.5
-    theta1 = radius( 1.0, 0.0, xcr1, ycr1 );
+    theta1 = radian( 1.0, 0.0, xcr1, ycr1 );
     
-    // F6.5.6
-    delta_theta = radius( xcr1, ycr1, -xcr2, -ycr2 );
+    delta_theta = radian( xcr1, ycr1, -xcr2, -ycr2 );
     float  PIx2 = M_PI * 2.0;
     while( delta_theta > PIx2 ) delta_theta -= PIx2;
     while( delta_theta < 0.0 ) delta_theta += PIx2;
     if( fS == false ) delta_theta -= PIx2;
     *cx=cx1, *cy=cy1, *startAngle=theta1, *angle=delta_theta;
 }
-
-/*
- // svg : [A | a] (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
- 
- // x1 y1 x2 y2 fA fS rx ry φ
-function  radian( ux, uy, vx, vy ) {
-    var  dot = ux * vx + uy * vy;
-    var  mod = Math.sqrt( ( ux * ux + uy * uy ) * ( vx * vx + vy * vy ) );
-    var  rad = Math.acos( dot / mod );
-    if( ux * vy - uy * vx < 0.0 ) rad = -rad;
-    return  rad;
-}
-//conversion_from_endpoint_to_center_parameterization
-//sample :  convert(200,200,300,200,1,1,50,50,0,{})
-function convert(x1, y1, x2, y2, fA, fS, rx, ry, phi) {
-    var cx,cy,theta1,delta_theta;
-    
-    if( rx == 0.0 || ry == 0.0 ) return -1;  // invalid arguments
-    
-    var  s_phi = Math.sin( phi );
-    var  c_phi = Math.cos( phi );
-    var  hd_x = ( x1 - x2 ) / 2.0;   // half diff of x
-    var  hd_y = ( y1 - y2 ) / 2.0;   // half diff of y
-    var  hs_x = ( x1 + x2 ) / 2.0;   // half sum of x
-    var  hs_y = ( y1 + y2 ) / 2.0;   // half sum of y
-    
-    // F6.5.1
-    var  x1_ = c_phi * hd_x + s_phi * hd_y;
-    var  y1_ = c_phi * hd_y - s_phi * hd_x;
-    
-    var  rxry = rx * ry;
-    var  rxy1_ = rx * y1_;
-    var  ryx1_ = ry * x1_;
-    var  sum_of_sq = rxy1_ * rxy1_ + ryx1_ * ryx1_;   // sum of square
-    var  coe = Math.sqrt( ( rxry * rxry - sum_of_sq ) / sum_of_sq );
-    if( fA == fS ) coe = -coe;
-    
-    // F6.5.2
-    var  cx_ = coe * rxy1_ / ry;
-    var  cy_ = -coe * ryx1_ / rx;
-    
-    // F6.5.3
-    cx = c_phi * cx_ - s_phi * cy_ + hs_x;
-    cy = s_phi * cx_ + c_phi * cy_ + hs_y;
-    
-    var  xcr1 = ( x1_ - cx_ ) / rx;
-    var  xcr2 = ( x1_ + cx_ ) / rx;
-    var  ycr1 = ( y1_ - cy_ ) / ry;
-    var  ycr2 = ( y1_ + cy_ ) / ry;
-    
-    // F6.5.5
-    theta1 = radian( 1.0, 0.0, xcr1, ycr1 );
-    
-    // F6.5.6
-    delta_theta = radian( xcr1, ycr1, -xcr2, -ycr2 );
-    var  PIx2 = Math.PI * 2.0;
-    while( delta_theta > PIx2 ) delta_theta -= PIx2;
-    while( delta_theta < 0.0 ) delta_theta += PIx2;
-    if( fS == false ) delta_theta -= PIx2;
-    
-    var outputObj = { // cx, cy, theta1, delta_theta
-        cx : cx,
-        cy : cy,
-        theta1 : theta1,
-        delta_theta : delta_theta
-    }
-    console.dir(outputObj);
-    
-    return outputObj;
-}
- */
 
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
 {
@@ -177,11 +101,6 @@ function convert(x1, y1, x2, y2, fA, fS, rx, ry, phi) {
 {
     [super viewDidLoad];
     
-    NSScanner *scan=[NSScanner scannerWithString:@"a b c"];
-    NSString *ch1;
-    scan.charactersToBeSkipped=[NSCharacterSet characterSetWithCharactersInString:@", "];
-    BOOL flag=[scan scanCharactersFromSet:[NSCharacterSet letterCharacterSet] intoString:&ch1];
-    
     _scroll=[[UIScrollView alloc] initWithFrame:self.view.bounds];
     [self.view addSubview:_scroll];
     _scroll.pagingEnabled=YES;
@@ -202,13 +121,35 @@ function convert(x1, y1, x2, y2, fA, fS, rx, ry, phi) {
             [view.layer addSublayer:layer];
         }
     }
+    
+    NSScanner *scan=[NSScanner scannerWithString:@"A30,30 0 0,1 30,30"];
+    scan.charactersToBeSkipped=[NSCharacterSet characterSetWithCharactersInString:@", "];
+    float rx, ry, angle, big, clock, x, y;
+    scan.scanLocation=1;
+    [scan scanFloat:&rx];
+    [scan scanFloat:&ry];
+    [scan scanFloat:&angle];
+    [scan scanFloat:&big];
+    [scan scanFloat:&clock];
+    [scan scanFloat:&x];
+    [scan scanFloat:&y];
+    float cx, cy, startAngle, deltaAngle;
+    convert(0, 0, x, y, big, clock, rx, ry, angle, &cx, &cy, &startAngle, &deltaAngle);
+    
+    UIBezierPath *path1=[UIBezierPath bezierPath];
+    [path1 moveToPoint:CGPointMake(0, 0)];
+    if (rx==ry)
+    {
+        [path1 addArcWithCenter:CGPointMake(cx, cy) radius:rx startAngle:startAngle endAngle:startAngle+deltaAngle clockwise:clock];
+    }
+    
     //return;
     CAShapeLayer *l=[CAShapeLayer layer];
     l.backgroundColor=[UIColor clearColor].CGColor;
     //
     l.frame=CGRectMake(0, 0, 300, 300);
-    UIBezierPath *path=[UIBezierPath bezierPathWithRect:CGRectMake(20, 30, 100, 300)];
-    l.path=path.CGPath;
+    //UIBezierPath *path=[UIBezierPath bezierPathWithRect:CGRectMake(20, 30, 100, 300)];
+    l.path=path1.CGPath;
     l.strokeColor=[UIColor greenColor].CGColor;
     l.fillColor=[UIColor purpleColor].CGColor;
     l.lineWidth=2;

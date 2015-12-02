@@ -6,7 +6,7 @@
   <title>Example arcs01 - arc commands in path data</title>
   <desc>Picture of a pie chart with two pie wedges and
         a picture of a line with arc blips</desc>
- <g transform="scale(5 5)">
+ <g transform="scale(3 3)">
         <path d="M40,20  A30,30 0 0,0 70,70"
     style="stroke: #cccc00; stroke-width:2; fill:none;"/>
 
@@ -16,7 +16,7 @@
 <path d="M40,20  A30,30 0 1,1 70,70"
     style="stroke: #00ff00; stroke-width:2; fill:none;"/>
 
-<path d="M40,20  A30,30 0 0,1 70,50"
+<path d="M0,0  A30,30 0 0,1 30,30"
     style="stroke: #0000ff; stroke-width:2; fill:none;"/>
     </g>
 </svg>

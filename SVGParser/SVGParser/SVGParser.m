@@ -77,6 +77,59 @@ static UIColor *color_from_color_str(NSString *str)
     return color;
 }
 
+static float radian(float ux, float uy, float vx, float vy)//radian
+{
+    float  dot = ux * vx + uy * vy;
+    float  mod = sqrtf((ux * ux + uy * uy ) * ( vx * vx + vy * vy ) );
+    float  rad = acosf( dot / mod );
+    if( ux * vy - uy * vx < 0.0 ) rad = -rad;
+    return  rad;
+}
+
+static void convert(float x1, float y1, float x2, float y2, float fA, float fS, float rx, float ry, float phi, float *cx, float *cy, float *startAngle, float *angle)
+{
+    float cx1,cy1,theta1,delta_theta;
+    
+    if( rx == 0.0 || ry == 0.0 ) return;  // invalid arguments
+    
+    float  s_phi = sinf( phi );
+    float  c_phi = cosf( phi );
+    float  hd_x = ( x1 - x2 ) / 2.0;   // half diff of x
+    float  hd_y = ( y1 - y2 ) / 2.0;   // half diff of y
+    float  hs_x = ( x1 + x2 ) / 2.0;   // half sum of x
+    float  hs_y = ( y1 + y2 ) / 2.0;   // half sum of y
+    
+    float  x1_ = c_phi * hd_x + s_phi * hd_y;
+    float  y1_ = c_phi * hd_y - s_phi * hd_x;
+    
+    float  rxry = rx * ry;
+    float  rxy1_ = rx * y1_;
+    float  ryx1_ = ry * x1_;
+    float  sum_of_sq = rxy1_ * rxy1_ + ryx1_ * ryx1_;   // sum of square
+    float  coe = sqrtf( ( rxry * rxry - sum_of_sq ) / sum_of_sq );
+    if( fA == fS ) coe = -coe;
+    
+    float  cx_ = coe * rxy1_ / ry;
+    float  cy_ = -coe * ryx1_ / rx;
+    
+    cx1 = c_phi * cx_ - s_phi * cy_ + hs_x;
+    cy1 = s_phi * cx_ + c_phi * cy_ + hs_y;
+    
+    float  xcr1 = ( x1_ - cx_ ) / rx;
+    float  xcr2 = ( x1_ + cx_ ) / rx;
+    float  ycr1 = ( y1_ - cy_ ) / ry;
+    float  ycr2 = ( y1_ + cy_ ) / ry;
+    
+    theta1 = radian( 1.0, 0.0, xcr1, ycr1 );
+    
+    delta_theta = radian( xcr1, ycr1, -xcr2, -ycr2 );
+    float  PIx2 = M_PI * 2.0;
+    while( delta_theta > PIx2 ) delta_theta -= PIx2;
+    while( delta_theta < 0.0 ) delta_theta += PIx2;
+    if( fS == false ) delta_theta -= PIx2;
+    *cx=cx1, *cy=cy1, *startAngle=theta1, *angle=delta_theta;
+}
+
 static UIBezierPath *path_from_d_str(NSString *str)
 {
     NSScanner *scan=[NSScanner scannerWithString:str];
@@ -221,40 +274,33 @@ static UIBezierPath *path_from_d_str(NSString *str)
             float tmp_x=last_anchor_x, tmp_y=last_anchor_y;
             last_anchor_x=x+path.currentPoint.x, last_anchor_y=y+path.currentPoint.y;
             [path addQuadCurveToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y) controlPoint:CGPointMake(2*path.currentPoint.x-tmp_x, 2*path.currentPoint.y-tmp_y)];
-        }else if ([cmd isEqualToString:@"A"]||[cmd isEqualToString:@"a"])
+        }else if ([cmd isEqualToString:@"A"])
         {
-            for (int i=0; i<7; ++i)
-            {
-                [scan scanFloat:NULL];
-            }
-        }
-        /*else if ([cmd isEqualToString:@"A"])
-          {
-          float rx, ry, big, clock, x, y;
-          [scan scanFloat:&rx];
-          [scan scanFloat:&ry];
-          [scan scanFloat:NULL];
-          [scan scanFloat:&big];
-          [scan scanFloat:&clock];
-          [scan scanFloat:&x];
-          [scan scanFloat:&y];
-          float cx=path.currentPoint.x+(((y<=path.currentPoint.y?clock:!clock)?big:!big)?1:-1)*(rx+ry)/2*fabs(x-path.currentPoint.x)/sqrtf(powf(x-path.currentPoint.x, 2)+powf(y-path.currentPoint.y, 2));
-          float cy=path.currentPoint.y+(y-path.currentPoint.y)*(cx-path.currentPoint.x)/(x-path.currentPoint.x);
-          [path addArcWithCenter:CGPointMake(cx, cy) radius:(rx+ry)/2 startAngle:atanf((path.currentPoint.y-cy)/(path.currentPoint.x-cx)) endAngle:atanf((y-cy)/(x-cx)) clockwise:clock];
-          }else if ([cmd isEqualToString:@"a"])
-          {
-          float rx, ry, big, clock, x, y;
-          [scan scanFloat:&rx];
-          [scan scanFloat:&ry];
-          [scan scanFloat:NULL];
-          [scan scanFloat:&big];
-          [scan scanFloat:&clock];
-          [scan scanFloat:&x];
-          [scan scanFloat:&y];
-          float cx=path.currentPoint.x+(((y<=0?clock:!clock)?big:!big)?1:-1)*(rx+ry)/2*fabs(x)/sqrtf(powf(x, 2)+powf(y, 2));
-          float cy=path.currentPoint.y+y*(cx-path.currentPoint.x)/x;
-          [path addArcWithCenter:CGPointMake(cx, cy) radius:(rx+ry)/2 startAngle:atanf((path.currentPoint.y-cy)/(path.currentPoint.x-cx)) endAngle:atanf((y+path.currentPoint.y-cy)/(x+path.currentPoint.x-cx)) clockwise:clock];
-          }*/else if ([cmd isEqualToString:@"Z"]||[cmd isEqualToString:@"z"])
+            float rx, ry, angle, big, clock, x, y;
+            [scan scanFloat:&rx];
+            [scan scanFloat:&ry];
+            [scan scanFloat:&angle];
+            [scan scanFloat:&big];
+            [scan scanFloat:&clock];
+            [scan scanFloat:&x];
+            [scan scanFloat:&y];
+            float cx, cy, startAngle, deltaAngle;
+            convert(path.currentPoint.x, path.currentPoint.y, x, y, clock, big, rx, ry, angle, &cx, &cy, &startAngle, &deltaAngle);
+            [path addArcWithCenter:CGPointMake(cx, cy) radius:(rx+ry)/2 startAngle:startAngle endAngle:startAngle+deltaAngle clockwise:clock];
+        }else if ([cmd isEqualToString:@"a"])
+        {
+            float rx, ry, angle, big, clock, x, y;
+            [scan scanFloat:&rx];
+            [scan scanFloat:&ry];
+            [scan scanFloat:&angle];
+            [scan scanFloat:&big];
+            [scan scanFloat:&clock];
+            [scan scanFloat:&x];
+            [scan scanFloat:&y];
+            float cx, cy, startAngle, deltaAngle;
+            convert(path.currentPoint.x, path.currentPoint.y, x+path.currentPoint.x, y+path.currentPoint.y, clock, big, rx, ry, angle, &cx, &cy, &startAngle, &deltaAngle);
+            [path addArcWithCenter:CGPointMake(cx, cy) radius:(rx+ry)/2 startAngle:startAngle endAngle:startAngle+deltaAngle clockwise:clock];
+        }else if ([cmd isEqualToString:@"Z"]||[cmd isEqualToString:@"z"])
           {
               [path closePath];
           }
