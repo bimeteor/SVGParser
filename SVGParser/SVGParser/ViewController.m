@@ -22,63 +22,6 @@
 
 @implementation ViewController
 
-// svg : [A | a] (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
-
-/* x1 y1 x2 y2 fA fS rx ry φ */
-static float radian(float ux, float uy, float vx, float vy)
-{
-    float  dot = ux * vx + uy * vy;
-    float  mod = sqrtf((ux * ux + uy * uy ) * ( vx * vx + vy * vy ) );
-    float  rad = acosf( dot / mod );
-    if( ux * vy - uy * vx < 0.0 ) rad = -rad;
-    return  rad;
-}
-
-//sample :  convert(200,200,300,200,1,1,50,50,0,{})
-static void convert(float x1, float y1, float x2, float y2, float fA, float fS, float rx, float ry, float phi, float *cx, float *cy, float *startAngle, float *angle)
-{
-    float cx1,cy1,theta1,delta_theta;
-    
-    if( rx == 0.0 || ry == 0.0 ) return;  // invalid arguments
-    
-    float  s_phi = sinf( phi );
-    float  c_phi = cosf( phi );
-    float  hd_x = ( x1 - x2 ) / 2.0;   // half diff of x
-    float  hd_y = ( y1 - y2 ) / 2.0;   // half diff of y
-    float  hs_x = ( x1 + x2 ) / 2.0;   // half sum of x
-    float  hs_y = ( y1 + y2 ) / 2.0;   // half sum of y
-    
-    float  x1_ = c_phi * hd_x + s_phi * hd_y;
-    float  y1_ = c_phi * hd_y - s_phi * hd_x;
-    
-    float  rxry = rx * ry;
-    float  rxy1_ = rx * y1_;
-    float  ryx1_ = ry * x1_;
-    float  sum_of_sq = rxy1_ * rxy1_ + ryx1_ * ryx1_;   // sum of square
-    float  coe = sqrtf( ( rxry * rxry - sum_of_sq ) / sum_of_sq );
-    if( fA == fS ) coe = -coe;
-    
-    float  cx_ = coe * rxy1_ / ry;
-    float  cy_ = -coe * ryx1_ / rx;
-    
-    cx1 = c_phi * cx_ - s_phi * cy_ + hs_x;
-    cy1 = s_phi * cx_ + c_phi * cy_ + hs_y;
-    
-    float  xcr1 = ( x1_ - cx_ ) / rx;
-    float  xcr2 = ( x1_ + cx_ ) / rx;
-    float  ycr1 = ( y1_ - cy_ ) / ry;
-    float  ycr2 = ( y1_ + cy_ ) / ry;
-    
-    theta1 = radian( 1.0, 0.0, xcr1, ycr1 );
-    
-    delta_theta = radian( xcr1, ycr1, -xcr2, -ycr2 );
-    float  PIx2 = M_PI * 2.0;
-    while( delta_theta > PIx2 ) delta_theta -= PIx2;
-    while( delta_theta < 0.0 ) delta_theta += PIx2;
-    if( fS == false ) delta_theta -= PIx2;
-    *cx=cx1, *cy=cy1, *startAngle=theta1, *angle=delta_theta;
-}
-
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
 {
     if (flag)
@@ -124,25 +67,8 @@ static void convert(float x1, float y1, float x2, float y2, float fA, float fS, 
     
     NSScanner *scan=[NSScanner scannerWithString:@"A30,30 0 0,1 30,30"];
     scan.charactersToBeSkipped=[NSCharacterSet characterSetWithCharactersInString:@", "];
-    float rx, ry, angle, big, clock, x, y;
-    scan.scanLocation=1;
-    [scan scanFloat:&rx];
-    [scan scanFloat:&ry];
-    [scan scanFloat:&angle];
-    [scan scanFloat:&big];
-    [scan scanFloat:&clock];
-    [scan scanFloat:&x];
-    [scan scanFloat:&y];
-    float cx, cy, startAngle, deltaAngle;
-    convert(0, 0, x, y, big, clock, rx, ry, angle, &cx, &cy, &startAngle, &deltaAngle);
     
     UIBezierPath *path1=[UIBezierPath bezierPath];
-    [path1 moveToPoint:CGPointMake(0, 0)];
-    if (rx==ry)
-    {
-        [path1 addArcWithCenter:CGPointMake(cx, cy) radius:rx startAngle:startAngle endAngle:startAngle+deltaAngle clockwise:clock];
-    }
-    
     //return;
     CAShapeLayer *l=[CAShapeLayer layer];
     l.backgroundColor=[UIColor clearColor].CGColor;

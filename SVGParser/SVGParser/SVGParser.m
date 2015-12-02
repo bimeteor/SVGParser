@@ -314,6 +314,7 @@ static CATransform3D trans_from_trans_str(NSString *str)
 {
     CATransform3D t=CATransform3DIdentity;
     NSScanner *scan=[NSScanner scannerWithString:str];
+    scan.charactersToBeSkipped=scanSkipCharacters;
     while (!scan.isAtEnd)
     {
         NSString *tmp;
@@ -330,14 +331,12 @@ static CATransform3D trans_from_trans_str(NSString *str)
             {
                 float x, y=0;
                 [scan scanFloat:&x];
-                scan.scanLocation+=1;
                 [scan scanFloat:&y];
                 t=CATransform3DTranslate(t, x, y, 0);
             }else if ([tmp isEqualToString:@"scale"])
             {
                 float x, y;
                 [scan scanFloat:&x];
-                scan.scanLocation+=1;
                 BOOL flag=[scan scanFloat:&y];
                 if (!flag)
                 {
@@ -362,15 +361,10 @@ static CATransform3D trans_from_trans_str(NSString *str)
             {
                 CATransform3D tt=CATransform3DIdentity;
                 [scan scanDouble:&tt.m11];
-                scan.scanLocation+=1;
                 [scan scanDouble:&tt.m12];
-                scan.scanLocation+=1;
                 [scan scanDouble:&tt.m21];
-                scan.scanLocation+=1;
                 [scan scanDouble:&tt.m22];
-                scan.scanLocation+=1;
                 [scan scanDouble:&tt.m41];
-                scan.scanLocation+=1;
                 [scan scanDouble:&tt.m42];
                 t=CATransform3DConcat(tt, t);
             }
