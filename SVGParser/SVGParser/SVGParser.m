@@ -52,6 +52,9 @@ static UIColor *color_from_name(NSString *str)
     }else if ([str isEqualToString:@"purple"])
     {
         return [UIColor purpleColor];
+    }else if ([str isEqualToString:@"white"])
+    {
+        return [UIColor whiteColor];
     }
     return nil;
 }
@@ -504,13 +507,11 @@ static void shape_by_node(CAShapeLayer *layer, XMLNode *node)
             if (str.length>0)
             {
                 NSScanner *scan=[NSScanner scannerWithString:str];
+                scan.charactersToBeSkipped=scanSkipCharacters;
                 CGRect rect;
                 [scan scanDouble:&rect.origin.x];
-                scan.scanLocation+=1;
                 [scan scanDouble:&rect.origin.y];
-                scan.scanLocation+=1;
                 [scan scanDouble:&rect.size.width];
-                scan.scanLocation+=1;
                 [scan scanDouble:&rect.size.height];
                 layer.frame=rect;//TODO:frank
             }
@@ -522,7 +523,15 @@ static void shape_by_node(CAShapeLayer *layer, XMLNode *node)
     {
         t=CATransform3DConcat(t, val.CATransform3DValue);
     }
-    layer.transform=t;
+    layer.transform=t;/*
+    if ([layer isKindOfClass:[CAShapeLayer class]])
+    {
+        UIBezierPath *path=[UIBezierPath bezierPathWithCGPath:layer.path];
+        
+        [path applyTransform:CATransform3DGetAffineTransform(t)];
+        path.lineWidth=2;
+        layer.path=path.CGPath;
+    }*/
 }
 
 #pragma mark - layer from node
@@ -674,7 +683,8 @@ static CAGradientLayer *layer_from_linear_gradient_node(XMLNode*node)
     }
     if (colors.count>0)
     {
-        layer.colors=colors;
+        //layer.colors=colors;
+        layer.colors=@[(__bridge id)color_rgb(0xf60).CGColor, (__bridge id)color_rgb(0xff6).CGColor];
     }
     if (locs.count>0)
     {
@@ -757,15 +767,19 @@ NSArray *layers_from_node(XMLNode *node)
             [arr enumerateObjectsUsingBlock:^(id obj1, NSUInteger idx1, BOOL *stop1) {
                 if ([[obj1 name] isEqualToString:[obj linearGradientName]])
                 {
-                    UIBezierPath *path=[UIBezierPath bezierPathWithCGPath:[obj path]];
-                    CGRect re=path.bounds;
-                    [obj1 setFrame:path.bounds];
-                    CATransform3D t=[(CALayer*)obj transform];
-                    CGAffineTransform f=CATransform3DGetAffineTransform(t);
-                    [path applyTransform:f];
-                    CGRect rrr=path.bounds;
-                    [(CALayer*)obj setTransform:CATransform3DIdentity];
-                    [(CALayer*)obj1 setTransform:t];
+                    CAGradientLayer *grad=(CAGradientLayer*)obj1;
+                    CAShapeLayer *shape=(CAShapeLayer*)obj;
+                    
+                    UIBezierPath *path=[UIBezierPath bezierPathWithCGPath:shape.path];
+                    grad.frame=path.bounds;
+                    grad.affineTransform=CATransform3DGetAffineTransform(shape.transform);
+                    //[obj1 setFrame:path.bounds];
+                    //[obj setFillColor:[UIColor redColor].CGColor];
+                    [obj setOpacity:0];
+                    //CATransform3D t=[(CALayer*)obj transform];
+                    //[(CALayer*)obj1 setTransform:t];
+                    //CGAffineTransform f=CATransform3DGetAffineTransform(t);
+                    //[obj1 applyTransform:f];
                     //[obj1 setMask:obj];
                 }
             }];

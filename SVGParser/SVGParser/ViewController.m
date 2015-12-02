@@ -68,27 +68,32 @@
     NSScanner *scan=[NSScanner scannerWithString:@"A30,30 0 0,1 30,30"];
     scan.charactersToBeSkipped=[NSCharacterSet characterSetWithCharactersInString:@", "];
     
+    //UIBezierPath *path1=[UIBezierPath bezierPathWithRect:CGRectMake(90, 90, 100, 80)];
     UIBezierPath *path1=[UIBezierPath bezierPath];
+    [path1 moveToPoint:CGPointMake(90, 90)];
+    [path1 addLineToPoint:CGPointMake(200, 200)];
     //return;
     CAShapeLayer *l=[CAShapeLayer layer];
+    [self.view.layer addSublayer:l];
     l.backgroundColor=[UIColor clearColor].CGColor;
-    //
     l.frame=CGRectMake(0, 0, 300, 300);
     //UIBezierPath *path=[UIBezierPath bezierPathWithRect:CGRectMake(20, 30, 100, 300)];
+    path1.lineWidth=8;
     l.path=path1.CGPath;
-    l.strokeColor=[UIColor greenColor].CGColor;
-    l.fillColor=[UIColor purpleColor].CGColor;
-    l.lineWidth=2;
+    l.strokeColor=[UIColor redColor].CGColor;
+    l.fillColor=[UIColor blueColor].CGColor;
     
+    //return;
     CAGradientLayer *gradient=[CAGradientLayer layer];
     gradient.frame=CGRectMake(0, 0, 300, 300);
     gradient.locations=@[@0.2, @0.8];
     gradient.startPoint=CGPointMake(0, 0);
     gradient.endPoint=CGPointMake(0, 1);
     gradient.colors=@[(__bridge id)[UIColor redColor].CGColor, (__bridge id)[UIColor blueColor].CGColor];
+    gradient.colors=@[(__bridge id)color_rgb(0xf60).CGColor, (__bridge id)color_rgb(0xff6).CGColor];
     [self.view.layer addSublayer:gradient];
     //[self.view.layer addSublayer:l];
-    gradient.mask=l;
+    //gradient.mask=l;
 }
 
 - (void)viewDidLoad1
