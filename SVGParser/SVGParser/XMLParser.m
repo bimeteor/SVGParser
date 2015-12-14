@@ -297,4 +297,5 @@ static NSString *str_from_node(XMLNode *node, int depth)
 {
     [_currentString appendString:[string stringByTrimmingCharactersInSet:_trimCharacters]];
 }
+
 @end

@@ -7,10 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4B1240601C159A7A00F02327 /* ContactMemUnBindHeadImageBkg.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B12405F1C159A7A00F02327 /* ContactMemUnBindHeadImageBkg.png */; };
 		4B16F7BF1C0C1D3700083543 /* basic8.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4B16F7BE1C0C1D3700083543 /* basic8.svg */; };
 		4B3B38161C08D302006BE750 /* SVGParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3B38151C08D302006BE750 /* SVGParser.m */; };
 		4B3B38181C08E0AF006BE750 /* basic6.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4B3B38171C08E0AF006BE750 /* basic6.svg */; };
 		4B8BD4B51BFDA7D600663933 /* XMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8BD4B41BFDA7D600663933 /* XMLParser.m */; };
+		4BD6DBDF1C1EC3F7000590FE /* basic9.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD6DBDE1C1EC3F7000590FE /* basic9.svg */; };
+		4BD6DBE11C1EC564000590FE /* basic10.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD6DBE01C1EC564000590FE /* basic10.svg */; };
+		4BD6DBE31C1EEA16000590FE /* basic11.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD6DBE21C1EEA16000590FE /* basic11.svg */; };
+		4BD6DBE61C1EEBC2000590FE /* SVGXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BD6DBE51C1EEBC2000590FE /* SVGXMLParser.m */; };
 		4BD98B161C07055B0020EFB6 /* basic1.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD98B151C07055B0020EFB6 /* basic1.svg */; };
 		4BD98B181C0767D90020EFB6 /* basic2.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD98B171C0767D90020EFB6 /* basic2.svg */; };
 		4BD98B1A1C0769AC0020EFB6 /* basic3.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD98B191C0769AC0020EFB6 /* basic3.svg */; };
@@ -32,12 +37,18 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4B12405F1C159A7A00F02327 /* ContactMemUnBindHeadImageBkg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ContactMemUnBindHeadImageBkg.png; sourceTree = "<group>"; };
 		4B16F7BE1C0C1D3700083543 /* basic8.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic8.svg; sourceTree = "<group>"; };
 		4B3B38141C08D302006BE750 /* SVGParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVGParser.h; sourceTree = "<group>"; };
 		4B3B38151C08D302006BE750 /* SVGParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVGParser.m; sourceTree = "<group>"; };
 		4B3B38171C08E0AF006BE750 /* basic6.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = basic6.svg; sourceTree = "<group>"; };
 		4B8BD4B31BFDA7D600663933 /* XMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLParser.h; sourceTree = "<group>"; };
 		4B8BD4B41BFDA7D600663933 /* XMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMLParser.m; sourceTree = "<group>"; };
+		4BD6DBDE1C1EC3F7000590FE /* basic9.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic9.svg; sourceTree = "<group>"; };
+		4BD6DBE01C1EC564000590FE /* basic10.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic10.svg; sourceTree = "<group>"; };
+		4BD6DBE21C1EEA16000590FE /* basic11.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = basic11.svg; sourceTree = "<group>"; };
+		4BD6DBE41C1EEBC2000590FE /* SVGXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVGXMLParser.h; sourceTree = "<group>"; };
+		4BD6DBE51C1EEBC2000590FE /* SVGXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVGXMLParser.m; sourceTree = "<group>"; };
 		4BD98B151C07055B0020EFB6 /* basic1.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic1.svg; sourceTree = "<group>"; };
 		4BD98B171C0767D90020EFB6 /* basic2.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic2.svg; sourceTree = "<group>"; };
 		4BD98B191C0769AC0020EFB6 /* basic3.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic3.svg; sourceTree = "<group>"; };
@@ -96,6 +107,7 @@
 		D6CE6B0D1BFB6B91005DB3A7 /* SVGParser */ = {
 			isa = PBXGroup;
 			children = (
+				4B12405F1C159A7A00F02327 /* ContactMemUnBindHeadImageBkg.png */,
 				D6CE6B111BFB6B91005DB3A7 /* AppDelegate.h */,
 				D6CE6B121BFB6B91005DB3A7 /* AppDelegate.m */,
 				D6CE6B271BFB6D6E005DB3A7 /* UIView+NSLayoutExtension.h */,
@@ -106,12 +118,17 @@
 				D6CE6B2C1BFB6D6E005DB3A7 /* PathDrawingView.m */,
 				4B8BD4B31BFDA7D600663933 /* XMLParser.h */,
 				4B8BD4B41BFDA7D600663933 /* XMLParser.m */,
+				4BD6DBE41C1EEBC2000590FE /* SVGXMLParser.h */,
+				4BD6DBE51C1EEBC2000590FE /* SVGXMLParser.m */,
 				D6CE6B841C09B5F7005DB3A7 /* CALayer+Addition.h */,
 				D6CE6B851C09B5F7005DB3A7 /* CALayer+Addition.m */,
 				4B3B38141C08D302006BE750 /* SVGParser.h */,
 				4B3B38151C08D302006BE750 /* SVGParser.m */,
 				D6CE6B141BFB6B91005DB3A7 /* ViewController.h */,
 				D6CE6B151BFB6B91005DB3A7 /* ViewController.m */,
+				4BD6DBE21C1EEA16000590FE /* basic11.svg */,
+				4BD6DBE01C1EC564000590FE /* basic10.svg */,
+				4BD6DBDE1C1EC3F7000590FE /* basic9.svg */,
 				4B16F7BE1C0C1D3700083543 /* basic8.svg */,
 				D6CE6B871C09BB66005DB3A7 /* basic7.svg */,
 				4B3B38171C08E0AF006BE750 /* basic6.svg */,
@@ -200,12 +217,16 @@
 				D6CE6B881C09BB66005DB3A7 /* basic7.svg in Resources */,
 				4BD98B181C0767D90020EFB6 /* basic2.svg in Resources */,
 				D6CE6B5A1BFE201A005DB3A7 /* basic0.svg in Resources */,
+				4B1240601C159A7A00F02327 /* ContactMemUnBindHeadImageBkg.png in Resources */,
 				4B16F7BF1C0C1D3700083543 /* basic8.svg in Resources */,
 				4BD98B161C07055B0020EFB6 /* basic1.svg in Resources */,
 				4BD98B1E1C083CF50020EFB6 /* basic5.svg in Resources */,
+				4BD6DBDF1C1EC3F7000590FE /* basic9.svg in Resources */,
 				D6CE6B261BFB6D5B005DB3A7 /*  dov_all_loading.svg in Resources */,
+				4BD6DBE31C1EEA16000590FE /* basic11.svg in Resources */,
 				D6CE6B1E1BFB6B91005DB3A7 /* LaunchScreen.storyboard in Resources */,
 				4BD98B1A1C0769AC0020EFB6 /* basic3.svg in Resources */,
+				4BD6DBE11C1EC564000590FE /* basic10.svg in Resources */,
 				D6CE6B1B1BFB6B91005DB3A7 /* Assets.xcassets in Resources */,
 				4BD98B1C1C076C400020EFB6 /* basic4.svg in Resources */,
 				D6CE6B191BFB6B91005DB3A7 /* Main.storyboard in Resources */,
@@ -228,6 +249,7 @@
 				D6CE6B131BFB6B91005DB3A7 /* AppDelegate.m in Sources */,
 				D6CE6B311BFB6D6E005DB3A7 /* PathDrawingView.m in Sources */,
 				D6CE6B101BFB6B91005DB3A7 /* main.m in Sources */,
+				4BD6DBE61C1EEBC2000590FE /* SVGXMLParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
