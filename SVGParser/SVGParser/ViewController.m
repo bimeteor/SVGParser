@@ -10,7 +10,7 @@
 #import "SVGParser.h"
 #import "UIView+NSLayoutExtension.h"
 #import "PathDrawingView.h"
-#import "XMLParser.h"
+#import "SVGXMLParser.h"
 #import "UIView+Addition.h"
 
 @interface ViewController ()<UIScrollViewDelegate>
@@ -48,7 +48,7 @@
     [self.view addSubview:_scroll];
     _scroll.pagingEnabled=YES;
     _scroll.delegate=self;
-    const long count=11;
+    const long count=15;
     _scroll.contentSize=CGSizeMake(self.view.width*(count+1), self.view.height);
     for (long i=count; i>=0; --i)
     {
@@ -57,14 +57,19 @@
         view.left=self.view.width*(count-i);
         
         NSString *path=[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"basic%li", i] ofType:@"svg"];
-        XMLNode *node=[XMLParser nodeWithString:[NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil]];
+        XMLNode *node=[SVGXMLParser nodeWithString:[NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil]];
         NSArray *arr=layers_from_node(node);NSLog(@"%li",i);
         for (CALayer *layer in arr)
         {
             [view.layer addSublayer:layer];
         }
+        if (i==1)
+        {
+            CAShapeLayer *aa=arr[38];
+            NSLog(@"%@",aa);
+        }
     }
-    
+    /*
     NSScanner *scan=[NSScanner scannerWithString:@"A30,30 0 0,1 30,30"];
     scan.charactersToBeSkipped=[NSCharacterSet characterSetWithCharactersInString:@", "];
     
@@ -73,23 +78,27 @@
     [self.view.layer addSublayer:l];
     l.backgroundColor=[UIColor clearColor].CGColor;
     l.frame=CGRectMake(0, 0, 300, 300);
-    //l.transform=CATransform3DMakeScale(1, 0.5, 1);
+    l.transform=CATransform3DMakeRotation(M_PI_4, 0, 0, 1);
     l.lineWidth=4;
     l.path=path1.CGPath;
     l.strokeColor=[UIColor redColor].CGColor;
     l.fillColor=[UIColor blueColor].CGColor;
     
     CAGradientLayer *gradient=[CAGradientLayer layer];
-    gradient.frame=CGRectMake(0, 0, 300, 300);//path1.bounds;
+    gradient.anchorPoint=CGPointZero;
+    gradient.frame=path1.bounds;
+    gradient.transform=l.transform;
     gradient.locations=@[@0.2, @0.8];
     gradient.startPoint=CGPointMake(0, 0);
     gradient.endPoint=CGPointMake(0, 1);
     gradient.colors=@[(__bridge id)[UIColor redColor].CGColor, (__bridge id)[UIColor blueColor].CGColor];
     gradient.mask=l;
-    [self.view.layer addSublayer:gradient];
-    //[self.view.layer addSublayer:l];
-    
-}
+    UIBezierPath *p=[UIBezierPath bezierPathWithCGPath:l.path];
+    [p applyTransform:CGAffineTransformMakeTranslation(-p.bounds.origin.x, -p.bounds.origin.y)];
+    l.path=p.CGPath;
+    l.transform=CATransform3DIdentity;
+    [self.view.layer addSublayer:gradient];*/
+ }
 
 - (void)viewDidLoad1
 {

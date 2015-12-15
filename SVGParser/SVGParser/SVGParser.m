@@ -8,7 +8,6 @@
 
 #import "SVGParser.h"
 #import "UIView+Addition.h"
-#import "CALayer+Addition.h"
 
 typedef NS_ENUM(NSUInteger, SVGNodeType)
 {
@@ -23,6 +22,8 @@ typedef NS_ENUM(NSUInteger, SVGNodeType)
 
 static NSString *graphs_names[]={@"path", @"line", @"rect", @"circle", @"ellipse", @"polyline", @"polygon"};
 static NSCharacterSet *scanSkipCharacters;
+NSString *fillLinearGradientName=@"fillLinearGradientName";
+NSString *strokeLinearGradientName=@"strokeLinearGradientName";
 
 #pragma mark - attrs from string
 
@@ -61,25 +62,39 @@ static UIColor *color_from_name(NSString *str)
 
 static UIColor *color_from_color_str(NSString *str)
 {
-    UIColor *color=color_from_name(str);
-    if (!color)
+    UIColor *color=nil;
+    if ([str hasPrefix:@"rgb"])
     {
-        if ([str hasPrefix:@"#"])
+        NSScanner *scan=[NSScanner scannerWithString:str];
+        scan.charactersToBeSkipped=scanSkipCharacters;
+        scan.scanLocation=4;
+        int r,g,b;
+        [scan scanInt:&r];
+        [scan scanInt:&g];
+        [scan scanInt:&b];
+        color=[UIColor colorWithRed:1.0*r/255 green:1.0*g/255 blue:1.0*b/255 alpha:1];
+    }else
+    {
+        color=color_from_name(str);
+        if (!color)
         {
-            NSScanner *scan=[NSScanner scannerWithString:str];
-            scan.scanLocation=1;
-            unsigned num;
-            [scan scanHexInt:&num];
-            color=color_rgb(num);
+            if ([str hasPrefix:@"#"])
+            {
+                NSScanner *scan=[NSScanner scannerWithString:str];
+                scan.scanLocation=1;
+                unsigned num;
+                [scan scanHexInt:&num];
+                color=color_rgb(num);
+            }else
+            {
+                color=[UIColor blueColor];
+            }
         }
     }
-    if (!color)
-    {
-        color=[UIColor blueColor];
-    }
+    
     return color;
 }
-
+//TODO:frank
 static float radian(float ux, float uy, float vx, float vy)//radian
 {
     float  dot = ux * vx + uy * vy;
@@ -315,6 +330,7 @@ static UIBezierPath *path_from_d_str(NSString *str)
 
 static CATransform3D trans_from_trans_str(NSString *str)
 {
+    str=[str stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     CATransform3D t=CATransform3DIdentity;
     NSScanner *scan=[NSScanner scannerWithString:str];
     scan.charactersToBeSkipped=scanSkipCharacters;
@@ -401,12 +417,35 @@ static void attr_from_raw_couple_str(NSString *key1, NSString *val1, NSString **
             [scan scanUpToString:@"#" intoString:nil];
             scan.scanLocation+=1;
             [scan scanUpToString:@")" intoString:(NSString**)val2];
-            *key2=@"linearGradientName";
+            *key2=[key1 stringByAppendingString:@"LinearGradientName"];
         }else
         {
             *key2=[key1 stringByAppendingString:@"Color"];
             *val2=(__bridge id)color_from_color_str(val1).CGColor;
         }
+    }else if ([key1 isEqualToString:@"stroke-dasharray"])
+    {
+        if ([val1 isEqualToString:@"none"])
+        {
+            *val2=@[@(HUGE_VALF)];
+        }else
+        {
+            NSMutableArray *arr=[NSMutableArray new];
+            NSScanner *scan=[NSScanner scannerWithString:val1];
+            scan.charactersToBeSkipped=scanSkipCharacters;
+            int val;
+            BOOL flag;
+            while (!scan.isAtEnd)
+            {
+                flag=[scan scanInt:&val];
+                if (flag)
+                {
+                    [arr addObject:@(val)];
+                }
+            }
+            *val2=arr;
+        }
+        *key2=@"lineDashPattern";
     }else if ([key1 isEqualToString:@"fill-rule"])
     {
         if ([val1 isEqualToString:@"evenodd"])
@@ -513,25 +552,36 @@ static void shape_by_node(CAShapeLayer *layer, XMLNode *node)
                 [scan scanDouble:&rect.origin.y];
                 [scan scanDouble:&rect.size.width];
                 [scan scanDouble:&rect.size.height];
-                layer.frame=rect;//TODO:frank
+                //layer.frame=rect;//TODO:frank
             }
         }
         node=node.parentNode;
+    }
+    if ([layer isKindOfClass:[CAShapeLayer class]])
+    {
+        UIBezierPath *path=[UIBezierPath bezierPathWithCGPath:layer.path];
+        CGRect rect=path.bounds;
+        //line 出现0的情况
+        if (rect.size.width<0.5)
+        {
+            rect.size.width=0.5;
+        }
+        if (rect.size.height<0.5)
+        {
+            rect.size.height=0.5;
+        }
+        layer.frame=rect;
+        [path applyTransform:CGAffineTransformMakeTranslation(-rect.origin.x, -rect.origin.y)];
+        layer.path=path.CGPath;
+        layer.anchorPoint=CGPointMake(-layer.frame.origin.x/layer.frame.size.width, -layer.frame.origin.y/layer.frame.size.height);
+        layer.position=CGPointZero;
     }
     CATransform3D t=CATransform3DIdentity;
     for (NSValue *val in trans)
     {
         t=CATransform3DConcat(t, val.CATransform3DValue);
     }
-    layer.transform=t;/*
-    if ([layer isKindOfClass:[CAShapeLayer class]])
-    {
-        UIBezierPath *path=[UIBezierPath bezierPathWithCGPath:layer.path];
-        
-        [path applyTransform:CATransform3DGetAffineTransform(t)];
-        path.lineWidth=2;
-        layer.path=path.CGPath;
-    }*/
+    layer.transform=t;
 }
 
 #pragma mark - layer from node
@@ -666,7 +716,7 @@ static CAGradientLayer *layer_from_linear_gradient_node(XMLNode*node)
             }
         }else
         {
-            NSString *style=chd.attributes[@"style"];
+            NSString *style=chd.attributes[@"style"];//TODO:frank
             if (style)
             {
                 NSDictionary *dict=attrs_from_style_str(style);
@@ -683,8 +733,7 @@ static CAGradientLayer *layer_from_linear_gradient_node(XMLNode*node)
     }
     if (colors.count>0)
     {
-        //layer.colors=colors;
-        layer.colors=@[(__bridge id)color_rgb(0xf60).CGColor, (__bridge id)color_rgb(0xff6).CGColor];
+        layer.colors=colors;
     }
     if (locs.count>0)
     {
@@ -696,12 +745,13 @@ static CAGradientLayer *layer_from_linear_gradient_node(XMLNode*node)
 CATextLayer *layer_from_text_node(XMLNode *node)
 {
     CATextLayer *layer=[CATextLayer layer];
-    layer.anchorPoint=CGPointZero;
-    layer.position=CGPointZero;
     layer.contentsScale=[UIScreen mainScreen].scale;
     layer.string=node.value;
-    layer.frame=CGRectMake([node.attributes[@"x"] floatValue], [node.attributes[@"y"] floatValue], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);//TODO:frank
-    //shape_by_attrs(layer, node);//TODO:frank
+    CGRect rect = [node.value boundingRectWithSize:CGSizeMake([UIScreen mainScreen].bounds.size.width, HUGE_VALF) options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:nil context:nil];
+    layer.frame=CGRectMake([node.attributes[@"x"] floatValue], [node.attributes[@"y"] floatValue], rect.size.width, rect.size.height);//TODO:frank
+    layer.anchorPoint=CGPointMake(-layer.frame.origin.x/layer.frame.size.width, -layer.frame.origin.y/layer.frame.size.height);
+    layer.position=CGPointZero;
+    shape_by_node((CAShapeLayer*)layer, node);
     return layer;
 }
 
@@ -751,39 +801,51 @@ NSArray *layers_from_node(XMLNode *node)
     });
     NSMutableArray *arr=[NSMutableArray new];
     add_layers_from_node(node, arr);
-    NSIndexSet *set=[arr indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+    NSIndexSet *grad=[arr indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
         return [obj isKindOfClass:[CAGradientLayer class]];
     }];
-    if (set.count>0)
+    if (grad.count>0)
     {
-        NSArray *sub=[arr objectsAtIndexes:set];
-        [arr removeObjectsAtIndexes:set];
+        NSArray *sub=[arr objectsAtIndexes:grad];
+        [arr removeObjectsAtIndexes:grad];
         [arr insertObjects:sub atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, sub.count)]];
     }
-    
+    NSMutableIndexSet *mask=[NSMutableIndexSet new];
     [arr enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        if ([obj linearGradientName])
+        if ([obj valueForKey:fillLinearGradientName])
         {
             [arr enumerateObjectsUsingBlock:^(id obj1, NSUInteger idx1, BOOL *stop1) {
-                if ([[obj1 name] isEqualToString:[obj linearGradientName]])
+                if ([[obj1 name] isEqualToString:[obj valueForKey:fillLinearGradientName]])
                 {
                     CAGradientLayer *grad=(CAGradientLayer*)obj1;
                     CAShapeLayer *shape=(CAShapeLayer*)obj;
-                    
+                    shape.strokeColor=[UIColor clearColor].CGColor;
                     UIBezierPath *path=[UIBezierPath bezierPathWithCGPath:shape.path];
                     grad.frame=path.bounds;
-                    grad.affineTransform=CATransform3DGetAffineTransform(shape.transform);
-                    //[obj1 setFrame:path.bounds];
-                    //[obj setFillColor:[UIColor redColor].CGColor];
-                    [obj setOpacity:0];
-                    //CATransform3D t=[(CALayer*)obj transform];
-                    //[(CALayer*)obj1 setTransform:t];
-                    //CGAffineTransform f=CATransform3DGetAffineTransform(t);
-                    //[obj1 applyTransform:f];
-                    //[obj1 setMask:obj];
+                    grad.transform=shape.transform;
+                    shape.transform=CATransform3DIdentity;
+                    grad.mask=shape;
+                    [mask addIndex:idx];
+                }
+            }];
+        }else if ([obj valueForKey:strokeLinearGradientName])
+        {
+            [arr enumerateObjectsUsingBlock:^(id obj1, NSUInteger idx1, BOOL *stop1) {
+                if ([[obj1 name] isEqualToString:[obj valueForKey:strokeLinearGradientName]])
+                {
+                    CAGradientLayer *grad=(CAGradientLayer*)obj1;
+                    CAShapeLayer *shape=(CAShapeLayer*)obj;
+                    shape.fillColor=[UIColor clearColor].CGColor;
+                    UIBezierPath *path=[UIBezierPath bezierPathWithCGPath:shape.path];
+                    grad.frame=path.bounds;
+                    grad.transform=shape.transform;
+                    shape.transform=CATransform3DIdentity;
+                    grad.mask=shape;
+                    [mask addIndex:idx];
                 }
             }];
         }
     }];
+    [arr removeObjectsAtIndexes:mask];
     return arr.count>0? arr:nil;
 }

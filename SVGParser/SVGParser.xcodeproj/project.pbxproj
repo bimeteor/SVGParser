@@ -16,6 +16,10 @@
 		4BD6DBE11C1EC564000590FE /* basic10.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD6DBE01C1EC564000590FE /* basic10.svg */; };
 		4BD6DBE31C1EEA16000590FE /* basic11.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD6DBE21C1EEA16000590FE /* basic11.svg */; };
 		4BD6DBE61C1EEBC2000590FE /* SVGXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BD6DBE51C1EEBC2000590FE /* SVGXMLParser.m */; };
+		4BD6DC131C201901000590FE /* basic12.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD6DC121C201901000590FE /* basic12.svg */; };
+		4BD6DC151C201985000590FE /* basic13.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD6DC141C201984000590FE /* basic13.svg */; };
+		4BD6DC171C202748000590FE /* basic14.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD6DC161C202748000590FE /* basic14.svg */; };
+		4BD6DC191C202885000590FE /* basic15.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD6DC181C202885000590FE /* basic15.svg */; };
 		4BD98B161C07055B0020EFB6 /* basic1.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD98B151C07055B0020EFB6 /* basic1.svg */; };
 		4BD98B181C0767D90020EFB6 /* basic2.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD98B171C0767D90020EFB6 /* basic2.svg */; };
 		4BD98B1A1C0769AC0020EFB6 /* basic3.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD98B191C0769AC0020EFB6 /* basic3.svg */; };
@@ -32,7 +36,6 @@
 		D6CE6B301BFB6D6E005DB3A7 /* UIView+Addition.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B2A1BFB6D6E005DB3A7 /* UIView+Addition.m */; };
 		D6CE6B311BFB6D6E005DB3A7 /* PathDrawingView.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B2C1BFB6D6E005DB3A7 /* PathDrawingView.m */; };
 		D6CE6B5A1BFE201A005DB3A7 /* basic0.svg in Resources */ = {isa = PBXBuildFile; fileRef = D6CE6B591BFE201A005DB3A7 /* basic0.svg */; };
-		D6CE6B861C09B5F7005DB3A7 /* CALayer+Addition.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B851C09B5F7005DB3A7 /* CALayer+Addition.m */; };
 		D6CE6B881C09BB66005DB3A7 /* basic7.svg in Resources */ = {isa = PBXBuildFile; fileRef = D6CE6B871C09BB66005DB3A7 /* basic7.svg */; };
 /* End PBXBuildFile section */
 
@@ -49,6 +52,10 @@
 		4BD6DBE21C1EEA16000590FE /* basic11.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = basic11.svg; sourceTree = "<group>"; };
 		4BD6DBE41C1EEBC2000590FE /* SVGXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVGXMLParser.h; sourceTree = "<group>"; };
 		4BD6DBE51C1EEBC2000590FE /* SVGXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVGXMLParser.m; sourceTree = "<group>"; };
+		4BD6DC121C201901000590FE /* basic12.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic12.svg; sourceTree = "<group>"; };
+		4BD6DC141C201984000590FE /* basic13.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic13.svg; sourceTree = "<group>"; };
+		4BD6DC161C202748000590FE /* basic14.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic14.svg; sourceTree = "<group>"; };
+		4BD6DC181C202885000590FE /* basic15.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic15.svg; sourceTree = "<group>"; };
 		4BD98B151C07055B0020EFB6 /* basic1.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic1.svg; sourceTree = "<group>"; };
 		4BD98B171C0767D90020EFB6 /* basic2.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic2.svg; sourceTree = "<group>"; };
 		4BD98B191C0769AC0020EFB6 /* basic3.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic3.svg; sourceTree = "<group>"; };
@@ -72,8 +79,6 @@
 		D6CE6B2B1BFB6D6E005DB3A7 /* PathDrawingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathDrawingView.h; sourceTree = "<group>"; };
 		D6CE6B2C1BFB6D6E005DB3A7 /* PathDrawingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PathDrawingView.m; sourceTree = "<group>"; };
 		D6CE6B591BFE201A005DB3A7 /* basic0.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic0.svg; sourceTree = "<group>"; };
-		D6CE6B841C09B5F7005DB3A7 /* CALayer+Addition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CALayer+Addition.h"; sourceTree = "<group>"; };
-		D6CE6B851C09B5F7005DB3A7 /* CALayer+Addition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CALayer+Addition.m"; sourceTree = "<group>"; };
 		D6CE6B871C09BB66005DB3A7 /* basic7.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic7.svg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -120,12 +125,14 @@
 				4B8BD4B41BFDA7D600663933 /* XMLParser.m */,
 				4BD6DBE41C1EEBC2000590FE /* SVGXMLParser.h */,
 				4BD6DBE51C1EEBC2000590FE /* SVGXMLParser.m */,
-				D6CE6B841C09B5F7005DB3A7 /* CALayer+Addition.h */,
-				D6CE6B851C09B5F7005DB3A7 /* CALayer+Addition.m */,
 				4B3B38141C08D302006BE750 /* SVGParser.h */,
 				4B3B38151C08D302006BE750 /* SVGParser.m */,
 				D6CE6B141BFB6B91005DB3A7 /* ViewController.h */,
 				D6CE6B151BFB6B91005DB3A7 /* ViewController.m */,
+				4BD6DC181C202885000590FE /* basic15.svg */,
+				4BD6DC161C202748000590FE /* basic14.svg */,
+				4BD6DC141C201984000590FE /* basic13.svg */,
+				4BD6DC121C201901000590FE /* basic12.svg */,
 				4BD6DBE21C1EEA16000590FE /* basic11.svg */,
 				4BD6DBE01C1EC564000590FE /* basic10.svg */,
 				4BD6DBDE1C1EC3F7000590FE /* basic9.svg */,
@@ -213,9 +220,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4BD6DC171C202748000590FE /* basic14.svg in Resources */,
+				4BD6DC131C201901000590FE /* basic12.svg in Resources */,
 				4B3B38181C08E0AF006BE750 /* basic6.svg in Resources */,
+				4BD6DC191C202885000590FE /* basic15.svg in Resources */,
 				D6CE6B881C09BB66005DB3A7 /* basic7.svg in Resources */,
 				4BD98B181C0767D90020EFB6 /* basic2.svg in Resources */,
+				4BD6DC151C201985000590FE /* basic13.svg in Resources */,
 				D6CE6B5A1BFE201A005DB3A7 /* basic0.svg in Resources */,
 				4B1240601C159A7A00F02327 /* ContactMemUnBindHeadImageBkg.png in Resources */,
 				4B16F7BF1C0C1D3700083543 /* basic8.svg in Resources */,
@@ -244,7 +255,6 @@
 				D6CE6B161BFB6B91005DB3A7 /* ViewController.m in Sources */,
 				D6CE6B301BFB6D6E005DB3A7 /* UIView+Addition.m in Sources */,
 				4B3B38161C08D302006BE750 /* SVGParser.m in Sources */,
-				D6CE6B861C09B5F7005DB3A7 /* CALayer+Addition.m in Sources */,
 				D6CE6B2F1BFB6D6E005DB3A7 /* UIView+NSLayoutExtension.m in Sources */,
 				D6CE6B131BFB6B91005DB3A7 /* AppDelegate.m in Sources */,
 				D6CE6B311BFB6D6E005DB3A7 /* PathDrawingView.m in Sources */,

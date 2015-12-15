@@ -185,13 +185,6 @@ static NSString *str_from_node(XMLNode *node, int depth)
 }
 
 @interface XMLParser()<NSXMLParserDelegate>
-{
-    NSXMLParser *_parser;
-    NSMutableString *_currentString;
-    NSCharacterSet *_trimCharacters;
-    XMLNode *_rootNode;
-    XMLNode *_currentNode;
-}
 @end
 
 @implementation XMLParser
@@ -233,7 +226,6 @@ static NSString *str_from_node(XMLNode *node, int depth)
 - (XMLNode*)node
 {
     BOOL flag = [_parser parse];
-    _rootNode = nil;
     if (flag)
     {
         return _currentNode;

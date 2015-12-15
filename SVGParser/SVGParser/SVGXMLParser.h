@@ -8,13 +8,8 @@
 
 #import "XMLParser.h"
 
-@interface SVGXMLNode : XMLNode
-
-@property (nonatomic) NSString *CDATA;
-- (SVGXMLNode*)rootNode;
-
-@end
-
 @interface SVGXMLParser : XMLParser
-
+{
+    XMLNode *_CDATA;
+}
 @end

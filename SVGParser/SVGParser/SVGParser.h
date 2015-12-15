@@ -10,6 +10,9 @@
 #import <QuartzCore/QuartzCore.h>
 #import "XMLParser.h"
 
+extern NSString *fillLinearGradientName;
+extern NSString *strokeLinearGradientName;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
