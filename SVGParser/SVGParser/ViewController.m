@@ -76,9 +76,9 @@
     grad.type=kCAGradientLayerRadial;
     grad.locations=@[@0.2, @0.8];
     grad.colors=@[(__bridge id)[UIColor redColor].CGColor, (__bridge id)[UIColor blueColor].CGColor];
-    grad.startPoint=CGPointMake(0, 0);
-    grad.endPoint=CGPointMake(0, 40);
-    grad.frame=CGRectMake(90, 200, 100, 80);
+    grad.startPoint=CGPointMake(50, 50);
+    grad.endPoint=CGPointMake(80, 80);
+    grad.frame=CGRectMake(90, 200, 100, 100);
     grad.radius=50;
     [grad setNeedsDisplay];
     /*

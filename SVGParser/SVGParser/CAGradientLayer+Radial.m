@@ -23,7 +23,7 @@ NSString *kCAGradientLayerRadial=@"kCAGradientLayerRadial";
     return [objc_getAssociatedObject(self, (void*)1) floatValue];
 }
 
-- (void)renderInContext:(CGContextRef)ctx
+- (void)drawInContext:(CGContextRef)ctx
 {
     CGContextSaveGState(ctx);
     if ([self.type isEqualToString:kCAGradientLayerRadial])
@@ -41,12 +41,12 @@ NSString *kCAGradientLayerRadial=@"kCAGradientLayerRadial";
             }
             CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef) self.colors, locs);
             CGContextSetAlpha(ctx, self.opacity);
-            CGContextDrawRadialGradient(ctx, gradient, self.startPoint, 0, self.endPoint, self.radius, kCGGradientDrawsAfterEndLocation);
+            CGContextDrawRadialGradient(ctx, gradient, self.startPoint, 0, self.endPoint, 20, kCGGradientDrawsAfterEndLocation);
             CGGradientRelease(gradient);
         }
     }else if (!CGRectIsEmpty(self.bounds))
     {
-        [super renderInContext:ctx];
+        [super drawInContext:ctx];
     }
     CGContextRestoreGState(ctx);
 }
