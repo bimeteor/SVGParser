@@ -94,70 +94,91 @@ static UIColor *color_from_color_str(NSString *str)
     
     return color;
 }
-//TODO:frank
-static float radian(float ux, float uy, float vx, float vy)//radian
-{
-    float  dot = ux * vx + uy * vy;
-    float  mod = sqrtf((ux * ux + uy * uy ) * ( vx * vx + vy * vy ) );
-    float  rad = acosf( dot / mod );
-    if( ux * vy - uy * vx < 0.0 ) rad = -rad;
-    return  rad;
-}
 
-static void convert(float x1, float y1, float x2, float y2, float fA, float fS, float rx, float ry, float phi, float *cx, float *cy, float *startAngle, float *angle)
+static void add_ellipse_arc_path(CGMutablePathRef path, float rx, float ry, float angle, bool big, bool clock, float x, float y)
 {
-    float cx1,cy1,theta1,delta_theta;
+    if (rx == 0 || ry == 0)
+    {
+        CGPathAddLineToPoint(path, NULL, x, y);
+        return;
+    }
+    CGFloat cosPhi = cos(angle);
+    CGFloat sinPhi = sin(angle);
+    CGPoint curr_point=CGPathGetCurrentPoint(path);
+    CGFloat	x1p = cosPhi * (curr_point.x-x)/2 + sinPhi * (curr_point.y-y)/2;
+    CGFloat	y1p = -sinPhi * (curr_point.x-x)/2 + cosPhi * (curr_point.y-y)/2;
     
-    if( rx == 0.0 || ry == 0.0 ) return;  // invalid arguments
+    CGFloat lhs;
+    {
+        CGFloat rx_2 = rx * rx;
+        CGFloat ry_2 = ry * ry;
+        CGFloat xp_2 = x1p * x1p;
+        CGFloat yp_2 = y1p * y1p;
+        CGFloat delta = xp_2/rx_2 + yp_2/ry_2;
+        if (delta > 1.0)
+        {
+            rx *= sqrt(delta);
+            ry *= sqrt(delta);
+            rx_2 = rx * rx;
+            ry_2 = ry * ry;
+        }
+        CGFloat sign = (big == clock) ? -1 : 1;
+        CGFloat numerator = rx_2 * ry_2 - rx_2 * yp_2 - ry_2 * xp_2;
+        CGFloat denom = rx_2 * yp_2 + ry_2 * xp_2;
+        numerator = MAX(0, numerator);
+        lhs = sign * sqrt(numerator/denom);
+    }
     
-    float  s_phi = sinf( phi );
-    float  c_phi = cosf( phi );
-    float  hd_x = ( x1 - x2 ) / 2.0;   // half diff of x
-    float  hd_y = ( y1 - y2 ) / 2.0;   // half diff of y
-    float  hs_x = ( x1 + x2 ) / 2.0;   // half sum of x
-    float  hs_y = ( y1 + y2 ) / 2.0;   // half sum of y
+    CGFloat cxp = lhs * (rx*y1p)/ry;
+    CGFloat cyp = lhs * -((ry * x1p)/rx);
+    CGFloat cx = cosPhi * cxp + -sinPhi * cyp + (curr_point.x+x)/2;
+    CGFloat cy = cxp * sinPhi + cyp * cosPhi + (curr_point.y+y)/2;
     
-    float  x1_ = c_phi * hd_x + s_phi * hd_y;
-    float  y1_ = c_phi * hd_y - s_phi * hd_x;
+    // transform our ellipse into the unit circle
+    CGAffineTransform t = CGAffineTransformMakeScale(1.0/rx, 1.0/ry);
+    t = CGAffineTransformRotate(t, -angle);
+    t = CGAffineTransformTranslate(t, -cx, -cy);
     
-    float  rxry = rx * ry;
-    float  rxy1_ = rx * y1_;
-    float  ryx1_ = ry * x1_;
-    float  sum_of_sq = rxy1_ * rxy1_ + ryx1_ * ryx1_;   // sum of square
-    float  coe = sqrtf( ( rxry * rxry - sum_of_sq ) / sum_of_sq );
-    if( fA == fS ) coe = -coe;
+    CGPoint arcPt1 = CGPointApplyAffineTransform(CGPointMake(curr_point.x, curr_point.y), t);
+    CGPoint arcPt2 = CGPointApplyAffineTransform(CGPointMake(x, y), t);
     
-    float  cx_ = coe * rxy1_ / ry;
-    float  cy_ = -coe * ryx1_ / rx;
+    CGFloat startAngle = atan2(arcPt1.y, arcPt1.x);
+    CGFloat endAngle = atan2(arcPt2.y, arcPt2.x);
+    CGFloat angleDelta = endAngle - startAngle;;
     
-    cx1 = c_phi * cx_ - s_phi * cy_ + hs_x;
-    cy1 = s_phi * cx_ + c_phi * cy_ + hs_y;
-    
-    float  xcr1 = ( x1_ - cx_ ) / rx;
-    float  xcr2 = ( x1_ + cx_ ) / rx;
-    float  ycr1 = ( y1_ - cy_ ) / ry;
-    float  ycr2 = ( y1_ + cy_ ) / ry;
-    
-    theta1 = radian( 1.0, 0.0, xcr1, ycr1 );
-    
-    delta_theta = radian( xcr1, ycr1, -xcr2, -ycr2 );
-    float  PIx2 = M_PI * 2.0;
-    while( delta_theta > PIx2 ) delta_theta -= PIx2;
-    while( delta_theta < 0.0 ) delta_theta += PIx2;
-    if( fS == false ) delta_theta -= PIx2;
-    *cx=cx1, *cy=cy1, *startAngle=theta1, *angle=delta_theta;
+    if (clock)
+    {
+        if (angleDelta < 0)
+        {
+            angleDelta += 2. * M_PI;
+        }
+    }
+    else
+    {
+        if (angleDelta > 0)
+        {
+            angleDelta = angleDelta - 2 * M_PI;
+        }
+    }
+    // construct the inverse transform
+    CGAffineTransform inv = CGAffineTransformMakeTranslation(cx, cy);
+    inv = CGAffineTransformRotate(inv, angle);
+    inv = CGAffineTransformScale(inv, rx, ry);
+    // add a inversely transformed circular arc to the current path
+    CGPathAddRelativeArc(path, &inv, 0, 0, 1, startAngle, angleDelta);
 }
 
 static UIBezierPath *path_from_d_str(NSString *str)
 {
     NSScanner *scan=[NSScanner scannerWithString:str];
     scan.charactersToBeSkipped=scanSkipCharacters;
-    UIBezierPath *path = [UIBezierPath bezierPath];
-    [path moveToPoint:CGPointZero];
+    CGMutablePathRef path=CGPathCreateMutable();
+    CGPathMoveToPoint(path, NULL, 0, 0);
     float last_anchor_x=0, last_anchor_y=0;
+    CGPoint curr_point;
     NSString *last_cmd, *cmd;
     BOOL flag=[scan scanCharactersFromSet:[NSCharacterSet letterCharacterSet] intoString:&cmd];
-    while (!scan.atEnd)
+    while (!scan.atEnd || flag)
     {
         if (!flag)
         {
@@ -172,50 +193,51 @@ static UIBezierPath *path_from_d_str(NSString *str)
                 cmd=last_cmd;
             }
         }
+        curr_point=CGPathGetCurrentPoint(path);
         if ([cmd isEqualToString:@"M"])
         {
             float x, y;
             [scan scanFloat:&x];
             [scan scanFloat:&y];
-            [path moveToPoint:CGPointMake(x, y)];
+            CGPathMoveToPoint(path, NULL, x, y);
         }else if ([cmd isEqualToString:@"m"])
         {
             float x, y;
             [scan scanFloat:&x];
             [scan scanFloat:&y];
-            [path moveToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y)];
+            CGPathMoveToPoint(path, NULL, x+curr_point.x, y+curr_point.y);
         }else if ([cmd isEqualToString:@"L"])
         {
             float x, y;
             [scan scanFloat:&x];
             [scan scanFloat:&y];
-            [path addLineToPoint:CGPointMake(x, y)];
+            CGPathAddLineToPoint(path, NULL, x, y);
         }else if ([cmd isEqualToString:@"l"])
         {
             float x, y;
             [scan scanFloat:&x];
             [scan scanFloat:&y];
-            [path addLineToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y)];
+            CGPathAddLineToPoint(path, NULL, x+curr_point.x, y+curr_point.y);
         }else if ([cmd isEqualToString:@"H"])
         {
             float x;
             [scan scanFloat:&x];
-            [path addLineToPoint:CGPointMake(x, path.currentPoint.y)];
+            CGPathAddLineToPoint(path, NULL, x, curr_point.y);
         }else if ([cmd isEqualToString:@"h"])
         {
             float x;
             [scan scanFloat:&x];
-            [path addLineToPoint:CGPointMake(x+path.currentPoint.x, path.currentPoint.y)];
+            CGPathAddLineToPoint(path, NULL, x+curr_point.x, curr_point.y);
         }else if ([cmd isEqualToString:@"V"])
         {
             float y;
             [scan scanFloat:&y];
-            [path addLineToPoint:CGPointMake(path.currentPoint.x, y)];
+            CGPathAddLineToPoint(path, NULL, curr_point.x, y);
         }else if ([cmd isEqualToString:@"v"])
         {
             float y;
             [scan scanFloat:&y];
-            [path addLineToPoint:CGPointMake(path.currentPoint.x, y+path.currentPoint.y)];
+            CGPathAddLineToPoint(path, NULL, curr_point.x, y+curr_point.y);
         }else if ([cmd isEqualToString:@"C"])
         {
             float x1, y1, x2, y2, x, y;
@@ -226,7 +248,7 @@ static UIBezierPath *path_from_d_str(NSString *str)
             [scan scanFloat:&x];
             [scan scanFloat:&y];
             last_anchor_x=x2, last_anchor_y=y2;
-            [path addCurveToPoint:CGPointMake(x, y) controlPoint1:CGPointMake(x1, y1) controlPoint2:CGPointMake(x2, y2)];
+            CGPathAddCurveToPoint(path, NULL, x1, y1, x2, y2, x, y);
         }else if ([cmd isEqualToString:@"c"])
         {
             float x1, y1, x2, y2, x, y;
@@ -236,8 +258,8 @@ static UIBezierPath *path_from_d_str(NSString *str)
             [scan scanFloat:&y2];
             [scan scanFloat:&x];
             [scan scanFloat:&y];
-            last_anchor_x=x2+path.currentPoint.x, last_anchor_y=y2+path.currentPoint.y;
-            [path addCurveToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y) controlPoint1:CGPointMake(x1+path.currentPoint.x, y1+path.currentPoint.y) controlPoint2:CGPointMake(x2+path.currentPoint.x, y2+path.currentPoint.y)];
+            last_anchor_x=x2+curr_point.x, last_anchor_y=y2+curr_point.y;
+            CGPathAddCurveToPoint(path, NULL, x1+curr_point.x, y1+curr_point.y, x2+curr_point.x, y2+curr_point.y, x+curr_point.x, y+curr_point.y);
         }else if ([cmd isEqualToString:@"S"])
         {
             float x2, y2, x, y;
@@ -247,7 +269,7 @@ static UIBezierPath *path_from_d_str(NSString *str)
             [scan scanFloat:&y];
             float tmp_x=last_anchor_x, tmp_y=last_anchor_y;
             last_anchor_x=x2, last_anchor_y=y2;
-            [path addCurveToPoint:CGPointMake(x, y) controlPoint1:CGPointMake(2*path.currentPoint.x-tmp_x, 2*path.currentPoint.y-tmp_y) controlPoint2:CGPointMake(x2, y2)];
+            CGPathAddCurveToPoint(path, NULL, 2*curr_point.x-tmp_x, 2*curr_point.y-tmp_y, x2, y2, x, y);
         }else if ([cmd isEqualToString:@"s"])
         {
             float x2, y2, x, y;
@@ -256,8 +278,8 @@ static UIBezierPath *path_from_d_str(NSString *str)
             [scan scanFloat:&x];
             [scan scanFloat:&y];
             float tmp_x=last_anchor_x, tmp_y=last_anchor_y;
-            last_anchor_x=x2+path.currentPoint.x, last_anchor_y=y2+path.currentPoint.y;
-            [path addCurveToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y) controlPoint1:CGPointMake(2*path.currentPoint.x-tmp_x, 2*path.currentPoint.y-tmp_y) controlPoint2:CGPointMake(x2+path.currentPoint.x, y2+path.currentPoint.y)];
+            last_anchor_x=x2+curr_point.x, last_anchor_y=y2+curr_point.y;
+            CGPathAddCurveToPoint(path, NULL, 2*curr_point.x-tmp_x, 2*curr_point.y-tmp_y, x2+curr_point.x, y2+curr_point.y, x+curr_point.x, y+curr_point.y);
         }else if ([cmd isEqualToString:@"Q"])
         {
             float x1, y1, x, y;
@@ -266,7 +288,7 @@ static UIBezierPath *path_from_d_str(NSString *str)
             [scan scanFloat:&x];
             [scan scanFloat:&y];
             last_anchor_x=x1, last_anchor_y=y1;
-            [path addQuadCurveToPoint:CGPointMake(x, y) controlPoint:CGPointMake(x1, y1)];
+            CGPathAddQuadCurveToPoint(path, NULL, x1, y1, x, y);
         }else if ([cmd isEqualToString:@"q"])
         {
             float x1, y1, x, y;
@@ -274,8 +296,8 @@ static UIBezierPath *path_from_d_str(NSString *str)
             [scan scanFloat:&y1];
             [scan scanFloat:&x];
             [scan scanFloat:&y];
-            last_anchor_x=x1+path.currentPoint.x, last_anchor_y=y1+path.currentPoint.y;
-            [path addQuadCurveToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y) controlPoint:CGPointMake(x1+path.currentPoint.x, y1+path.currentPoint.y)];
+            last_anchor_x=x1+curr_point.x, last_anchor_y=y1+curr_point.y;
+            CGPathAddQuadCurveToPoint(path, NULL, x1+curr_point.x, y1+curr_point.y, x+curr_point.x, y+curr_point.y);
         }else if ([cmd isEqualToString:@"T"])
         {
             float x, y;
@@ -283,49 +305,49 @@ static UIBezierPath *path_from_d_str(NSString *str)
             [scan scanFloat:&y];
             float tmp_x=last_anchor_x, tmp_y=last_anchor_y;
             last_anchor_x=x, last_anchor_y=y;
-            [path addQuadCurveToPoint:CGPointMake(x, y) controlPoint:CGPointMake(2*path.currentPoint.x-tmp_x, 2*path.currentPoint.y-tmp_y)];
+            CGPathAddQuadCurveToPoint(path, NULL, 2*curr_point.x-tmp_x, 2*curr_point.y-tmp_y, x, y);
         }else if ([cmd isEqualToString:@"t"])
         {
             float x, y;
             [scan scanFloat:&x];
             [scan scanFloat:&y];
             float tmp_x=last_anchor_x, tmp_y=last_anchor_y;
-            last_anchor_x=x+path.currentPoint.x, last_anchor_y=y+path.currentPoint.y;
-            [path addQuadCurveToPoint:CGPointMake(x+path.currentPoint.x, y+path.currentPoint.y) controlPoint:CGPointMake(2*path.currentPoint.x-tmp_x, 2*path.currentPoint.y-tmp_y)];
+            last_anchor_x=x+curr_point.x, last_anchor_y=y+curr_point.y;
+            CGPathAddQuadCurveToPoint(path, NULL, x+curr_point.x, y+curr_point.y, 2*curr_point.x-tmp_x, 2*curr_point.y-tmp_y);
         }else if ([cmd isEqualToString:@"A"])
         {
-            float rx, ry, angle, big, clock, x, y;
+            float rx, ry, angle, x, y;
+            int big, clock;
             [scan scanFloat:&rx];
             [scan scanFloat:&ry];
             [scan scanFloat:&angle];
-            [scan scanFloat:&big];
-            [scan scanFloat:&clock];
+            [scan scanInt:&big];
+            [scan scanInt:&clock];
             [scan scanFloat:&x];
             [scan scanFloat:&y];
-            float cx, cy, startAngle, deltaAngle;
-            convert(path.currentPoint.x, path.currentPoint.y, x, y, clock, big, rx, ry, angle, &cx, &cy, &startAngle, &deltaAngle);
-            [path addArcWithCenter:CGPointMake(cx, cy) radius:(rx+ry)/2 startAngle:startAngle endAngle:startAngle+deltaAngle clockwise:clock];
+            add_ellipse_arc_path(path, rx, ry, 1.0*angle*M_PI/180, big, clock, x, y);
         }else if ([cmd isEqualToString:@"a"])
         {
-            float rx, ry, angle, big, clock, x, y;
+            float rx, ry, angle, x, y;
+            int big, clock;
             [scan scanFloat:&rx];
             [scan scanFloat:&ry];
             [scan scanFloat:&angle];
-            [scan scanFloat:&big];
-            [scan scanFloat:&clock];
+            [scan scanInt:&big];
+            [scan scanInt:&clock];
             [scan scanFloat:&x];
             [scan scanFloat:&y];
-            float cx, cy, startAngle, deltaAngle;
-            convert(path.currentPoint.x, path.currentPoint.y, x+path.currentPoint.x, y+path.currentPoint.y, clock, big, rx, ry, angle, &cx, &cy, &startAngle, &deltaAngle);
-            [path addArcWithCenter:CGPointMake(cx, cy) radius:(rx+ry)/2 startAngle:startAngle endAngle:startAngle+deltaAngle clockwise:clock];
+            add_ellipse_arc_path(path, rx, ry, 1.0*angle*M_PI/180, big, clock, x+curr_point.x, y+curr_point.y);
         }else if ([cmd isEqualToString:@"Z"]||[cmd isEqualToString:@"z"])
-          {
-              [path closePath];
-          }
+        {
+            CGPathCloseSubpath(path);
+        }
         last_cmd=cmd;
         flag=[scan scanCharactersFromSet:[NSCharacterSet letterCharacterSet] intoString:&cmd];
     }
-    return path;
+    UIBezierPath *path1=[UIBezierPath bezierPathWithCGPath:path];
+    CGPathRelease(path);
+    return path1;
 }
 
 static CATransform3D trans_from_trans_str(NSString *str)

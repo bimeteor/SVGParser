@@ -16,7 +16,7 @@
 <path d="M40,20  A30,30 0 1,1 70,70"
     style="stroke: #00ff00; stroke-width:2; fill:none;"/>
 
-<path d="M0,0  A30,30 0 0,1 30,30"
+<path d="M40,20  A30,30 0 0,1 70,70"
     style="stroke: #0000ff; stroke-width:2; fill:none;"/>
     </g>
 </svg>

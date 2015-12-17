@@ -81,6 +81,13 @@
     grad.frame=CGRectMake(90, 200, 100, 100);
     grad.radius=50;
     [grad setNeedsDisplay];
+    
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(300, 300), NO, 0);
+    CGContextRef ctx=UIGraphicsGetCurrentContext();
+    [grad renderInContext:ctx];
+    UIImage *img=UIGraphicsGetImageFromCurrentImageContext();
+    
+    
     /*
     NSScanner *scan=[NSScanner scannerWithString:@"A30,30 0 0,1 30,30"];
     scan.charactersToBeSkipped=[NSCharacterSet characterSetWithCharactersInString:@", "];

@@ -8,6 +8,7 @@
 	 x="0px" y="0px" width="500px" height="500px" viewBox="0 0 500 500" enable-background="new 0 0 500 500" xml:space="preserve">
 <defs>
 </defs>
+<g transform="scale(0.6 0.6)">
 <rect fill="#FFFFFF" width="500" height="500"/>
 <text transform="matrix(1 0 0 1 31.4707 40.4448)"><tspan x="0" y="0" fill="#444444" font-family="'MyriadPro-Bold'" font-size="12">SVG Parser:</tspan><tspan x="61.811" y="0" fill="#444444" font-family="'MyriadPro-Regular'" font-size="12"> Shapes / Opacity / Blend</tspan></text>
 <rect x="31.382" y="72.5" fill="#232323" width="77" height="77"/>
@@ -67,4 +68,5 @@
 <circle fill="#A5A5A5" cx="333" cy="373.052" r="7.116"/>
 <path fill="#353535" d="M370.438,459.5c0,12.969,10.513,23.482,23.482,23.482s23.482-10.514,23.482-23.482"/>
 <path fill="#353535" d="M370.438,451.297c0-12.969,10.513-23.482,23.482-23.482s23.482,10.514,23.482,23.482"/>
+</g>
 </svg>
