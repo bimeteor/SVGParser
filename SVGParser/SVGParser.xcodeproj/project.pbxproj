@@ -13,6 +13,8 @@
 		4B3B38161C08D302006BE750 /* SVGParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3B38151C08D302006BE750 /* SVGParser.m */; };
 		4B3B38181C08E0AF006BE750 /* basic6.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4B3B38171C08E0AF006BE750 /* basic6.svg */; };
 		4B8BD4B51BFDA7D600663933 /* XMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8BD4B41BFDA7D600663933 /* XMLParser.m */; };
+		4BC635EB1C22DFC70089CC55 /* basic16.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BC635EA1C22DFC70089CC55 /* basic16.svg */; };
+		4BC635EE1C23A8BA0089CC55 /* RadialView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BC635ED1C23A8BA0089CC55 /* RadialView.m */; };
 		4BD6DBDF1C1EC3F7000590FE /* basic9.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD6DBDE1C1EC3F7000590FE /* basic9.svg */; };
 		4BD6DBE11C1EC564000590FE /* basic10.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD6DBE01C1EC564000590FE /* basic10.svg */; };
 		4BD6DBE31C1EEA16000590FE /* basic11.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD6DBE21C1EEA16000590FE /* basic11.svg */; };
@@ -50,6 +52,9 @@
 		4B3B38171C08E0AF006BE750 /* basic6.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = basic6.svg; sourceTree = "<group>"; };
 		4B8BD4B31BFDA7D600663933 /* XMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLParser.h; sourceTree = "<group>"; };
 		4B8BD4B41BFDA7D600663933 /* XMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMLParser.m; sourceTree = "<group>"; };
+		4BC635EA1C22DFC70089CC55 /* basic16.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = basic16.svg; sourceTree = "<group>"; };
+		4BC635EC1C23A8BA0089CC55 /* RadialView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RadialView.h; sourceTree = "<group>"; };
+		4BC635ED1C23A8BA0089CC55 /* RadialView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RadialView.m; sourceTree = "<group>"; };
 		4BD6DBDE1C1EC3F7000590FE /* basic9.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic9.svg; sourceTree = "<group>"; };
 		4BD6DBE01C1EC564000590FE /* basic10.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic10.svg; sourceTree = "<group>"; };
 		4BD6DBE21C1EEA16000590FE /* basic11.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = basic11.svg; sourceTree = "<group>"; };
@@ -130,10 +135,13 @@
 				4BD6DBE41C1EEBC2000590FE /* SVGXMLParser.h */,
 				4B3B38141C08D302006BE750 /* SVGParser.h */,
 				4B3B38151C08D302006BE750 /* SVGParser.m */,
+				4BC635EC1C23A8BA0089CC55 /* RadialView.h */,
+				4BC635ED1C23A8BA0089CC55 /* RadialView.m */,
 				4B25005A1C2140DC001A6311 /* CAGradientLayer+Radial.h */,
 				4B25005B1C2140DC001A6311 /* CAGradientLayer+Radial.m */,
 				D6CE6B141BFB6B91005DB3A7 /* ViewController.h */,
 				D6CE6B151BFB6B91005DB3A7 /* ViewController.m */,
+				4BC635EA1C22DFC70089CC55 /* basic16.svg */,
 				4BD6DC181C202885000590FE /* basic15.svg */,
 				4BD6DC161C202748000590FE /* basic14.svg */,
 				4BD6DC141C201984000590FE /* basic13.svg */,
@@ -229,6 +237,7 @@
 				4BD6DC131C201901000590FE /* basic12.svg in Resources */,
 				4B3B38181C08E0AF006BE750 /* basic6.svg in Resources */,
 				4BD6DC191C202885000590FE /* basic15.svg in Resources */,
+				4BC635EB1C22DFC70089CC55 /* basic16.svg in Resources */,
 				D6CE6B881C09BB66005DB3A7 /* basic7.svg in Resources */,
 				4BD98B181C0767D90020EFB6 /* basic2.svg in Resources */,
 				4BD6DC151C201985000590FE /* basic13.svg in Resources */,
@@ -260,6 +269,7 @@
 				4B8BD4B51BFDA7D600663933 /* XMLParser.m in Sources */,
 				D6CE6B161BFB6B91005DB3A7 /* ViewController.m in Sources */,
 				D6CE6B301BFB6D6E005DB3A7 /* UIView+Addition.m in Sources */,
+				4BC635EE1C23A8BA0089CC55 /* RadialView.m in Sources */,
 				4B3B38161C08D302006BE750 /* SVGParser.m in Sources */,
 				D6CE6B2F1BFB6D6E005DB3A7 /* UIView+NSLayoutExtension.m in Sources */,
 				D6CE6B131BFB6B91005DB3A7 /* AppDelegate.m in Sources */,

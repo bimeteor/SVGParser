@@ -13,6 +13,7 @@
 #import "SVGXMLParser.h"
 #import "UIView+Addition.h"
 #import "CAGradientLayer+Radial.h"
+#import "RadialView.h"
 
 @interface ViewController ()<UIScrollViewDelegate>
 {
@@ -49,7 +50,7 @@
     [self.view addSubview:_scroll];
     _scroll.pagingEnabled=YES;
     _scroll.delegate=self;
-    const long count=15;
+    const long count=16;
     _scroll.contentSize=CGSizeMake(self.view.width*(count+1), self.view.height);
     for (long i=count; i>=0; --i)
     {
@@ -64,13 +65,15 @@
         {
             [view.layer addSublayer:layer];
         }
-        if (i==1)
-        {
-            CAShapeLayer *aa=arr[38];
-            NSLog(@"%@",aa);
-        }
-    }
-    
+    }/*
+    RadialView *view=[[RadialView alloc] initWithFrame:CGRectMake(90, 90, 100, 100)];
+    [self.view addSubview:view];
+    view.locations=@[@0.2, @0.8];
+    view.colors=@[(__bridge id)[UIColor redColor].CGColor, (__bridge id)[UIColor blueColor].CGColor];
+    view.startPoint=CGPointMake(30, 50);
+    view.endPoint=CGPointMake(50, 50);
+    view.radius=50;
+    /*
     CAGradientLayer *grad=[CAGradientLayer layer];
     [self.view.layer addSublayer:grad];
     grad.type=kCAGradientLayerRadial;
@@ -86,7 +89,7 @@
     CGContextRef ctx=UIGraphicsGetCurrentContext();
     [grad renderInContext:ctx];
     UIImage *img=UIGraphicsGetImageFromCurrentImageContext();
-    
+    */
     
     /*
     NSScanner *scan=[NSScanner scannerWithString:@"A30,30 0 0,1 30,30"];

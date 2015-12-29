@@ -764,6 +764,16 @@ static CAGradientLayer *layer_from_linear_gradient_node(XMLNode*node)
     return layer;
 }
 
+static CAGradientLayer *copied_linear_gradient_layer(CAGradientLayer* layer)
+{
+    CAGradientLayer *l=[CAGradientLayer layer];
+    l.name=layer.name;
+    l.anchorPoint=layer.anchorPoint,l.position=layer.position;
+    l.startPoint=layer.startPoint,l.endPoint=layer.endPoint;
+    l.colors=layer.colors,l.locations=layer.locations;
+    return l;
+}
+
 CATextLayer *layer_from_text_node(XMLNode *node)
 {
     CATextLayer *layer=[CATextLayer layer];
@@ -802,7 +812,7 @@ static void add_layers_from_node(XMLNode *node, NSMutableArray *arr)
         [arr addObject:layer_from_polygon_node(node)];
     }else if ([node.name isEqualToString:@"text"])
     {
-        [arr addObject:layer_from_text_node(node)];
+        //[arr addObject:layer_from_text_node(node)];
     }else if ([node.name isEqualToString:@"linearGradient"])
     {
         [arr addObject:layer_from_linear_gradient_node(node)];
@@ -823,23 +833,18 @@ NSArray *layers_from_node(XMLNode *node)
     });
     NSMutableArray *arr=[NSMutableArray new];
     add_layers_from_node(node, arr);
-    NSIndexSet *grad=[arr indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+    NSIndexSet *idxs=[arr indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
         return [obj isKindOfClass:[CAGradientLayer class]];
     }];
-    if (grad.count>0)
-    {
-        NSArray *sub=[arr objectsAtIndexes:grad];
-        [arr removeObjectsAtIndexes:grad];
-        [arr insertObjects:sub atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, sub.count)]];
-    }
-    NSMutableIndexSet *mask=[NSMutableIndexSet new];
+    NSArray *grads=[arr objectsAtIndexes:idxs];
+    [arr removeObjectsAtIndexes:idxs];
     [arr enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         if ([obj valueForKey:fillLinearGradientName])
         {
-            [arr enumerateObjectsUsingBlock:^(id obj1, NSUInteger idx1, BOOL *stop1) {
+            [grads enumerateObjectsUsingBlock:^(id obj1, NSUInteger idx1, BOOL *stop1) {
                 if ([[obj1 name] isEqualToString:[obj valueForKey:fillLinearGradientName]])
                 {
-                    CAGradientLayer *grad=(CAGradientLayer*)obj1;
+                    CAGradientLayer *grad=copied_linear_gradient_layer(obj1);
                     CAShapeLayer *shape=(CAShapeLayer*)obj;
                     shape.strokeColor=[UIColor clearColor].CGColor;
                     UIBezierPath *path=[UIBezierPath bezierPathWithCGPath:shape.path];
@@ -847,15 +852,15 @@ NSArray *layers_from_node(XMLNode *node)
                     grad.transform=shape.transform;
                     shape.transform=CATransform3DIdentity;
                     grad.mask=shape;
-                    [mask addIndex:idx];
+                    [arr replaceObjectAtIndex:idx withObject:grad];
                 }
             }];
         }else if ([obj valueForKey:strokeLinearGradientName])
         {
-            [arr enumerateObjectsUsingBlock:^(id obj1, NSUInteger idx1, BOOL *stop1) {
+            [grads enumerateObjectsUsingBlock:^(id obj1, NSUInteger idx1, BOOL *stop1) {
                 if ([[obj1 name] isEqualToString:[obj valueForKey:strokeLinearGradientName]])
                 {
-                    CAGradientLayer *grad=(CAGradientLayer*)obj1;
+                    CAGradientLayer *grad=copied_linear_gradient_layer(obj1);
                     CAShapeLayer *shape=(CAShapeLayer*)obj;
                     shape.fillColor=[UIColor clearColor].CGColor;
                     UIBezierPath *path=[UIBezierPath bezierPathWithCGPath:shape.path];
@@ -863,11 +868,10 @@ NSArray *layers_from_node(XMLNode *node)
                     grad.transform=shape.transform;
                     shape.transform=CATransform3DIdentity;
                     grad.mask=shape;
-                    [mask addIndex:idx];
+                    [arr replaceObjectAtIndex:idx withObject:grad];
                 }
             }];
         }
     }];
-    [arr removeObjectsAtIndexes:mask];
     return arr.count>0? arr:nil;
 }
