@@ -50,7 +50,7 @@
     [self.view addSubview:_scroll];
     _scroll.pagingEnabled=YES;
     _scroll.delegate=self;
-    const long count=16;
+    const long count=17;
     _scroll.contentSize=CGSizeMake(self.view.width*(count+1), self.view.height);
     for (long i=count; i>=0; --i)
     {

@@ -28,6 +28,7 @@
 		4BD98B1A1C0769AC0020EFB6 /* basic3.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD98B191C0769AC0020EFB6 /* basic3.svg */; };
 		4BD98B1C1C076C400020EFB6 /* basic4.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD98B1B1C076C400020EFB6 /* basic4.svg */; };
 		4BD98B1E1C083CF50020EFB6 /* basic5.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BD98B1D1C083CF50020EFB6 /* basic5.svg */; };
+		4BE7E4B31C3F6AAD00125CD9 /* basic17.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BE7E4B21C3F6AAD00125CD9 /* basic17.svg */; };
 		D6CE6B101BFB6B91005DB3A7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B0F1BFB6B91005DB3A7 /* main.m */; };
 		D6CE6B131BFB6B91005DB3A7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B121BFB6B91005DB3A7 /* AppDelegate.m */; };
 		D6CE6B161BFB6B91005DB3A7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6CE6B151BFB6B91005DB3A7 /* ViewController.m */; };
@@ -69,6 +70,7 @@
 		4BD98B191C0769AC0020EFB6 /* basic3.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic3.svg; sourceTree = "<group>"; };
 		4BD98B1B1C076C400020EFB6 /* basic4.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic4.svg; sourceTree = "<group>"; };
 		4BD98B1D1C083CF50020EFB6 /* basic5.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = basic5.svg; sourceTree = "<group>"; };
+		4BE7E4B21C3F6AAD00125CD9 /* basic17.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = basic17.svg; sourceTree = "<group>"; };
 		D6CE6B0B1BFB6B91005DB3A7 /* SVGParser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SVGParser.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6CE6B0F1BFB6B91005DB3A7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		D6CE6B111BFB6B91005DB3A7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 				4B25005B1C2140DC001A6311 /* CAGradientLayer+Radial.m */,
 				D6CE6B141BFB6B91005DB3A7 /* ViewController.h */,
 				D6CE6B151BFB6B91005DB3A7 /* ViewController.m */,
+				4BE7E4B21C3F6AAD00125CD9 /* basic17.svg */,
 				4BC635EA1C22DFC70089CC55 /* basic16.svg */,
 				4BD6DC181C202885000590FE /* basic15.svg */,
 				4BD6DC161C202748000590FE /* basic14.svg */,
@@ -235,6 +238,7 @@
 			files = (
 				4BD6DC171C202748000590FE /* basic14.svg in Resources */,
 				4BD6DC131C201901000590FE /* basic12.svg in Resources */,
+				4BE7E4B31C3F6AAD00125CD9 /* basic17.svg in Resources */,
 				4B3B38181C08E0AF006BE750 /* basic6.svg in Resources */,
 				4BD6DC191C202885000590FE /* basic15.svg in Resources */,
 				4BC635EB1C22DFC70089CC55 /* basic16.svg in Resources */,

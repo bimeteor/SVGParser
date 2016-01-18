@@ -84,6 +84,10 @@ static UIColor *color_from_color_str(NSString *str)
                 scan.scanLocation=1;
                 unsigned num;
                 [scan scanHexInt:&num];
+                if (num<=0xfff&&num>1)
+                {
+                    num=((0xf00&num)<<12)+((0xf00&num)<<8)+((0xf0&num)<<8)+((0xf0&num)<<4)+((0xf&num)<<4)+(0xf&num);
+                }
                 color=color_rgb(num);
             }else
             {
