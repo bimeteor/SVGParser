@@ -65,33 +65,36 @@
         {
             [view.layer addSublayer:layer];
         }
-    }/*
+    }
     RadialView *view=[[RadialView alloc] initWithFrame:CGRectMake(90, 90, 100, 100)];
     [self.view addSubview:view];
     view.locations=@[@0.2, @0.8];
     view.colors=@[(__bridge id)[UIColor redColor].CGColor, (__bridge id)[UIColor blueColor].CGColor];
-    view.startPoint=CGPointMake(30, 50);
-    view.endPoint=CGPointMake(50, 50);
-    view.radius=50;
-    /*
+    view.startPoint=CGPointMake(0, 0);
+    view.endPoint=CGPointMake(100, 100);
+    //[view setValue:@(20) forKey:@"startRadius"];
+    //[view setValue:@(50) forKey:@"endRadius"];
+    
     CAGradientLayer *grad=[CAGradientLayer layer];
     [self.view.layer addSublayer:grad];
     grad.type=kCAGradientLayerRadial;
+    grad.allowsEdgeAntialiasing=YES;
     grad.locations=@[@0.2, @0.8];
     grad.colors=@[(__bridge id)[UIColor redColor].CGColor, (__bridge id)[UIColor blueColor].CGColor];
-    grad.startPoint=CGPointMake(50, 50);
-    grad.endPoint=CGPointMake(80, 80);
+    grad.startPoint=CGPointMake(0, 0);
+    grad.endPoint=CGPointMake(100, 100);
     grad.frame=CGRectMake(90, 200, 100, 100);
-    grad.radius=50;
+    [grad setValue:@(10) forKey:@"startRadius"];
+    [grad setValue:@(30) forKey:@"endRadius"];
     [grad setNeedsDisplay];
-    
+    /*
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(300, 300), NO, 0);
     CGContextRef ctx=UIGraphicsGetCurrentContext();
     [grad renderInContext:ctx];
     UIImage *img=UIGraphicsGetImageFromCurrentImageContext();
     */
     
-    /*
+    
     NSScanner *scan=[NSScanner scannerWithString:@"A30,30 0 0,1 30,30"];
     scan.charactersToBeSkipped=[NSCharacterSet characterSetWithCharactersInString:@", "];
     
@@ -112,14 +115,14 @@
     gradient.transform=l.transform;
     gradient.locations=@[@0.2, @0.8];
     gradient.startPoint=CGPointMake(0, 0);
-    gradient.endPoint=CGPointMake(0, 1);
+    gradient.endPoint=CGPointMake(0.5, 1);
     gradient.colors=@[(__bridge id)[UIColor redColor].CGColor, (__bridge id)[UIColor blueColor].CGColor];
     gradient.mask=l;
     UIBezierPath *p=[UIBezierPath bezierPathWithCGPath:l.path];
     [p applyTransform:CGAffineTransformMakeTranslation(-p.bounds.origin.x, -p.bounds.origin.y)];
     l.path=p.CGPath;
     l.transform=CATransform3DIdentity;
-    [self.view.layer addSublayer:gradient];*/
+    [self.view.layer addSublayer:gradient];
  }
 
 - (void)viewDidLoad1

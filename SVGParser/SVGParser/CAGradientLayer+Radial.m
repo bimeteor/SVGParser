@@ -7,25 +7,14 @@
 //
 
 #import "CAGradientLayer+Radial.h"
-#import <objc/runtime.h>
 
 NSString *kCAGradientLayerRadial=@"kCAGradientLayerRadial";
 
 @implementation CAGradientLayer (Radial)
 
-- (void)setRadius:(float)radius
-{
-    objc_setAssociatedObject(self, (void*)1, @(radius), OBJC_ASSOCIATION_RETAIN);
-}
-
-- (float)radius
-{
-    return [objc_getAssociatedObject(self, (void*)1) floatValue];
-}
-
 - (void)drawInContext:(CGContextRef)ctx
 {
-    CGContextSaveGState(ctx);
+    [super drawInContext:ctx];
     if ([self.type isEqualToString:kCAGradientLayerRadial])
     {
         size_t count = self.locations.count;
@@ -41,14 +30,14 @@ NSString *kCAGradientLayerRadial=@"kCAGradientLayerRadial";
             }
             CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef) self.colors, locs);
             CGContextSetAlpha(ctx, self.opacity);
-            CGContextDrawRadialGradient(ctx, gradient, self.startPoint, 0, self.endPoint, 20, kCGGradientDrawsAfterEndLocation);
+            CGContextDrawRadialGradient(ctx, gradient, self.startPoint, [[self valueForKey:@"startRadius"] floatValue], self.endPoint, [[self valueForKey:@"endRadius"] floatValue], kCGGradientDrawsAfterEndLocation);
             CGGradientRelease(gradient);
+            
         }
     }else if (!CGRectIsEmpty(self.bounds))
     {
         [super drawInContext:ctx];
     }
-    CGContextRestoreGState(ctx);
 }
 
 @end

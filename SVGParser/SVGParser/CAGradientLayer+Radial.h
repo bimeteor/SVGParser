@@ -11,5 +11,4 @@
 extern NSString *kCAGradientLayerRadial;
 
 @interface CAGradientLayer (Radial)
-@property(nonatomic) float radius;
 @end

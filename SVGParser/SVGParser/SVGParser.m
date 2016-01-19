@@ -721,8 +721,80 @@ static CAGradientLayer *layer_from_linear_gradient_node(XMLNode*node)
     layer.anchorPoint=CGPointZero;
     layer.position=CGPointZero;
     layer.name=node.attributes[@"id"];
-    layer.startPoint=CGPointMake([node.attributes[@"x1"] floatValue]/100, [node.attributes[@"y1"] floatValue]/100);
-    layer.endPoint=node.attributes[@"x2"]? CGPointMake([node.attributes[@"x2"] floatValue]/100, [node.attributes[@"y2"] floatValue]/100): CGPointMake(1, 0);
+    if ([node.attributes[@"x1"] hasSuffix:@"%"]||[node.attributes[@"y1"] hasSuffix:@"%"]||[node.attributes[@"x"] hasSuffix:@"%"]||[node.attributes[@"y2"] hasSuffix:@"%"])
+    {
+        layer.startPoint=CGPointMake([node.attributes[@"x1"] floatValue]/100, [node.attributes[@"y1"] floatValue]/100);
+        layer.endPoint=node.attributes[@"x2"]? CGPointMake([node.attributes[@"x2"] floatValue]/100, [node.attributes[@"y2"] floatValue]/100): CGPointMake(1, 0);
+    }else
+    {
+        layer.startPoint=CGPointMake([node.attributes[@"x1"] floatValue], [node.attributes[@"y1"] floatValue]);
+        layer.endPoint=node.attributes[@"x2"]? CGPointMake([node.attributes[@"x2"] floatValue], [node.attributes[@"y2"] floatValue]): CGPointMake(1, 0);
+        float minx=fminf(layer.startPoint.x, layer.endPoint.x);
+        float miny=fminf(layer.startPoint.y, layer.endPoint.y);
+        layer.startPoint=CGPointMake(layer.startPoint.x-minx, layer.startPoint.y-miny);
+        layer.endPoint=CGPointMake(layer.endPoint.x-minx, layer.endPoint.y-miny);
+        float maxx=fmaxf(fabs(layer.startPoint.x), fabs(layer.endPoint.x));
+        float maxy=fmaxf(fabs(layer.startPoint.y), fabs(layer.endPoint.y));
+        float max=fmaxf(maxx, maxy);
+        if (max!=0)
+        {
+            layer.startPoint=CGPointMake(layer.startPoint.x/max, layer.startPoint.y/max);
+            layer.endPoint=CGPointMake(layer.endPoint.x/max, layer.endPoint.y/max);
+        }
+    }
+    NSMutableArray *colors=[NSMutableArray new];
+    NSMutableArray *locs=[NSMutableArray new];
+    for (XMLNode *chd in node.childNodes)
+    {
+        NSString *offset=chd.attributes[@"offset"];
+        if (offset)
+        {
+            [locs addObject:@(offset.floatValue/100)];
+        }
+        NSString *color=chd.attributes[@"stop-color"];
+        if (color)
+        {
+            UIColor *color=color_from_color_str(chd.attributes[@"stop-color"]);
+            if (color)
+            {
+                [colors addObject:(__bridge id)color.CGColor];
+            }
+        }else
+        {
+            NSString *style=chd.attributes[@"style"];//TODO:frank
+            if (style)
+            {
+                NSDictionary *dict=attrs_from_style_str(style);
+                if (dict[@"stop-color"])
+                {
+                    UIColor *color=color_from_color_str(dict[@"stop-color"]);
+                    if (color)
+                    {
+                        [colors addObject:(__bridge id)color.CGColor];
+                    }
+                }
+            }
+        }
+    }
+    if (colors.count>0)
+    {
+        layer.colors=colors;
+    }
+    if (locs.count>0)
+    {
+        layer.locations=locs;
+    }
+    return layer;
+}
+
+static CAGradientLayer *layer_from_radial_gradient_node(XMLNode*node)
+{
+    CAGradientLayer *layer=[CAGradientLayer layer];
+    layer.anchorPoint=CGPointZero;
+    layer.position=CGPointZero;
+    layer.name=node.attributes[@"id"];
+    layer.startPoint=CGPointMake([node.attributes[@"cx"] floatValue]/100, [node.attributes[@"cy"] floatValue]/100);
+    layer.endPoint=node.attributes[@"fx"]? CGPointMake([node.attributes[@"fx"] floatValue]/100, [node.attributes[@"fy"] floatValue]/100): CGPointMake(1, 0);
     NSMutableArray *colors=[NSMutableArray new];
     NSMutableArray *locs=[NSMutableArray new];
     for (XMLNode *chd in node.childNodes)
@@ -820,6 +892,9 @@ static void add_layers_from_node(XMLNode *node, NSMutableArray *arr)
     }else if ([node.name isEqualToString:@"linearGradient"])
     {
         [arr addObject:layer_from_linear_gradient_node(node)];
+    }else if ([node.name isEqualToString:@"radialGradient"])
+    {
+        [arr addObject:layer_from_radial_gradient_node(node)];
     }else if ([node.name isEqualToString:@"svg"]||[node.name isEqualToString:@"g"]||[node.name isEqualToString:@"defs"])
     {
         for (XMLNode *tmp in node.childNodes)
