@@ -42,7 +42,43 @@
     NSLog(@"%li", index);
 }
 
-- (void)viewDidLoad
+- (void)viewDidLoad4
+{
+    [super viewDidLoad];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        double start=CFAbsoluteTimeGetCurrent();
+        for (int i=0; i<100; ++i)
+        {
+            NSString *path=[[NSBundle mainBundle] pathForResource:@"text9" ofType:@"svg"];
+            XMLNode *node=[SVGXMLParser nodeWithString:[NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil]];
+            NSArray *arr=layers_from_node(node);
+            for (CALayer *layer in arr)
+            {
+                [self.view.layer addSublayer:layer];
+            }
+        }
+        NSLog(@"%f", CFAbsoluteTimeGetCurrent()-start);
+    });
+}
+
+- (void)viewDidLoad3
+{
+    [super viewDidLoad];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        double start=CFAbsoluteTimeGetCurrent();
+        for (int i=0; i<100; ++i)
+        {
+            NSString *path=[[NSBundle mainBundle] pathForResource:@"text4" ofType:@"png"];
+            UIImage *img=[UIImage imageWithContentsOfFile:path];
+            UIImageView *view=[[UIImageView alloc] initWithFrame:CGRectMake(i, i, 40, 40)];
+            [self.view addSubview:view];
+            view.image=img;
+        }
+        NSLog(@"%f", CFAbsoluteTimeGetCurrent()-start);
+    });
+}
+
+- (void)viewDidLoad1
 {
     [super viewDidLoad];
     
@@ -65,7 +101,7 @@
         {
             [view.layer addSublayer:layer];
         }
-    }
+    }return;
     RadialView *view=[[RadialView alloc] initWithFrame:CGRectMake(90, 90, 100, 100)];
     [self.view addSubview:view];
     view.locations=@[@0.2, @0.8];
@@ -125,10 +161,10 @@
     [self.view.layer addSublayer:gradient];
  }
 
-- (void)viewDidLoad1
+- (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    /*
     CATextLayer *lay=[CATextLayer layer];
     [self.view.layer addSublayer:lay];
     lay.contentsScale=[UIScreen mainScreen].scale;
@@ -136,7 +172,7 @@
     lay.string=@"qrqwerq";
     lay.foregroundColor=[UIColor redColor].CGColor;
     lay.font=(__bridge_retained CFTypeRef)@"Verdana";
-    
+    */
     CALayer *layer=[CALayer layer];
     layer.frame=CGRectMake(50, 90, 200, 200);
     [self.view.layer addSublayer:layer];
@@ -146,17 +182,17 @@
     XMLNode *node=[XMLParser nodeWithString:[NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil]];
     _dict=[NSMutableDictionary new];
     for (int i=0; i<7; ++i)
-    {/*
+    {
         NSString *str=[NSString stringWithFormat:@"XMLID_%i_", i+1];
         XMLNode *node1=[node nodeForAttributeKey:@"id" value:str];
         if ([node1.name isEqualToString:@"path"])
         {
-            CAShapeLayer *layer1=layer_from_path_node(node1);
+            CAShapeLayer *layer1=layers_from_node(node1).firstObject;
             [layer addSublayer:layer1];
-            layer1.frame=CGRectMake(0, 0, 200, 200);
+            //layer1.frame=CGRectMake(0, 0, 200, 200);
             _dict[str]=layer1;
             layer1.hidden = YES;
-        }*/
+        }
     }
     //outline
     [_dict[@"XMLID_7_"] setHidden:NO];
