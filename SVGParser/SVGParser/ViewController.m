@@ -61,23 +61,6 @@
     });
 }
 
-- (void)viewDidLoad3
-{
-    [super viewDidLoad];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        double start=CFAbsoluteTimeGetCurrent();
-        for (int i=0; i<100; ++i)
-        {
-            NSString *path=[[NSBundle mainBundle] pathForResource:@"text4" ofType:@"png"];
-            UIImage *img=[UIImage imageWithContentsOfFile:path];
-            UIImageView *view=[[UIImageView alloc] initWithFrame:CGRectMake(i, i, 40, 40)];
-            [self.view addSubview:view];
-            view.image=img;
-        }
-        NSLog(@"%f", CFAbsoluteTimeGetCurrent()-start);
-    });
-}
-
 - (void)viewDidLoad1
 {
     [super viewDidLoad];
