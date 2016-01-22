@@ -588,6 +588,14 @@ static void shape_by_node(CAShapeLayer *layer, XMLNode *node)
         UIBezierPath *path=[UIBezierPath bezierPathWithCGPath:layer.path];
         CGRect rect=path.bounds;
         //line 出现0的情况
+        if (isinf(rect.origin.x))
+        {
+            rect.origin.x=0;
+        }
+        if (isinf(rect.origin.y))
+        {
+            rect.origin.y=0;
+        }
         if (rect.size.width<0.5)
         {
             rect.size.width=0.5;
@@ -729,10 +737,6 @@ static CAGradientLayer *layer_from_linear_gradient_node(XMLNode*node)
     {
         layer.startPoint=CGPointMake([node.attributes[@"x1"] floatValue], [node.attributes[@"y1"] floatValue]);
         layer.endPoint=node.attributes[@"x2"]? CGPointMake([node.attributes[@"x2"] floatValue], [node.attributes[@"y2"] floatValue]): CGPointMake(1, 0);
-        float minx=fminf(layer.startPoint.x, layer.endPoint.x);
-        float miny=fminf(layer.startPoint.y, layer.endPoint.y);
-        layer.startPoint=CGPointMake(layer.startPoint.x-minx, layer.startPoint.y-miny);
-        layer.endPoint=CGPointMake(layer.endPoint.x-minx, layer.endPoint.y-miny);
         float maxx=fmaxf(fabs(layer.startPoint.x), fabs(layer.endPoint.x));
         float maxy=fmaxf(fabs(layer.startPoint.y), fabs(layer.endPoint.y));
         float max=fmaxf(maxx, maxy);
@@ -844,9 +848,11 @@ static CAGradientLayer *copied_linear_gradient_layer(CAGradientLayer* layer)
 {
     CAGradientLayer *l=[CAGradientLayer layer];
     l.name=layer.name;
-    l.anchorPoint=layer.anchorPoint,l.position=layer.position;
-    l.startPoint=layer.startPoint,l.endPoint=layer.endPoint;
-    l.colors=layer.colors,l.locations=layer.locations;
+    l.anchorPoint=layer.anchorPoint;
+    l.position=layer.position;
+    l.colors=layer.colors;
+    l.startPoint=layer.startPoint;
+    l.endPoint=layer.endPoint;
     return l;
 }
 
