@@ -42,7 +42,43 @@
     NSLog(@"%li", index);
 }
 
-- (void)viewDidLoad
+- (void)viewDidLoad4
+{
+    [super viewDidLoad];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        double start=CFAbsoluteTimeGetCurrent();
+        for (int i=0; i<100; ++i)
+        {
+            NSString *path=[[NSBundle mainBundle] pathForResource:@"text9" ofType:@"svg"];
+            XMLNode *node=[SVGXMLParser nodeWithString:[NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil]];
+            NSArray *arr=layers_from_node(node);
+            for (CALayer *layer in arr)
+            {
+                [self.view.layer addSublayer:layer];
+            }
+        }
+        NSLog(@"%f", CFAbsoluteTimeGetCurrent()-start);
+    });
+}
+
+- (void)viewDidLoad3
+{
+    [super viewDidLoad];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        double start=CFAbsoluteTimeGetCurrent();
+        for (int i=0; i<100; ++i)
+        {
+            NSString *path=[[NSBundle mainBundle] pathForResource:@"text4" ofType:@"png"];
+            UIImage *img=[UIImage imageWithContentsOfFile:path];
+            UIImageView *view=[[UIImageView alloc] initWithFrame:CGRectMake(i, i, 40, 40)];
+            [self.view addSubview:view];
+            view.image=img;
+        }
+        NSLog(@"%f", CFAbsoluteTimeGetCurrent()-start);
+    });
+}
+
+- (void)viewDidLoad1
 {
     [super viewDidLoad];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -176,7 +212,7 @@
     [self.view.layer addSublayer:gradient];
  }
 
-- (void)viewDidLoad1
+- (void)viewDidLoad
 {
     [super viewDidLoad];
     /*

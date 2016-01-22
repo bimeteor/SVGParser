@@ -44,7 +44,6 @@
 		4BE7E5ED1C50861700125CD9 /* text2.png in Resources */ = {isa = PBXBuildFile; fileRef = 4BE7E5EB1C50861700125CD9 /* text2.png */; };
 		4BE7E5EE1C50861700125CD9 /* text2.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BE7E5EC1C50861700125CD9 /* text2.svg */; };
 		4BE7E5F11C5087EC00125CD9 /* text3.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BE7E5EF1C5087EC00125CD9 /* text3.svg */; };
-		4BE7E5F21C5087EC00125CD9 /* text3.png in Resources */ = {isa = PBXBuildFile; fileRef = 4BE7E5F01C5087EC00125CD9 /* text3.png */; };
 		4BE7E5F51C508B0800125CD9 /* text4.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BE7E5F31C508B0800125CD9 /* text4.svg */; };
 		4BE7E5F61C508B0800125CD9 /* text4.png in Resources */ = {isa = PBXBuildFile; fileRef = 4BE7E5F41C508B0800125CD9 /* text4.png */; };
 		4BE7E5F81C508D8700125CD9 /* text5.svg in Resources */ = {isa = PBXBuildFile; fileRef = 4BE7E5F71C508D8700125CD9 /* text5.svg */; };
@@ -115,7 +114,6 @@
 		4BE7E5EB1C50861700125CD9 /* text2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = text2.png; sourceTree = "<group>"; };
 		4BE7E5EC1C50861700125CD9 /* text2.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = text2.svg; sourceTree = "<group>"; };
 		4BE7E5EF1C5087EC00125CD9 /* text3.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = text3.svg; sourceTree = "<group>"; };
-		4BE7E5F01C5087EC00125CD9 /* text3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = text3.png; sourceTree = "<group>"; };
 		4BE7E5F31C508B0800125CD9 /* text4.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = text4.svg; sourceTree = "<group>"; };
 		4BE7E5F41C508B0800125CD9 /* text4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = text4.png; sourceTree = "<group>"; };
 		4BE7E5F71C508D8700125CD9 /* text5.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = text5.svg; sourceTree = "<group>"; };
@@ -221,7 +219,6 @@
 				4BE7E5F31C508B0800125CD9 /* text4.svg */,
 				4BE7E5F41C508B0800125CD9 /* text4.png */,
 				4BE7E5EF1C5087EC00125CD9 /* text3.svg */,
-				4BE7E5F01C5087EC00125CD9 /* text3.png */,
 				4BE7E5EB1C50861700125CD9 /* text2.png */,
 				4BE7E5EC1C50861700125CD9 /* text2.svg */,
 				4BE7E5E71C5084CA00125CD9 /* text1.png */,
@@ -344,7 +341,6 @@
 				4B5A71051C51EE0500D2972F /* text17.jpg in Resources */,
 				4BE7E5ED1C50861700125CD9 /* text2.png in Resources */,
 				4BE7E5E21C5080D800125CD9 /* text0.png in Resources */,
-				4BE7E5F21C5087EC00125CD9 /* text3.png in Resources */,
 				4B1240601C159A7A00F02327 /* ContactMemUnBindHeadImageBkg.png in Resources */,
 				4BE7E5F81C508D8700125CD9 /* text5.svg in Resources */,
 				4BE7E5FA1C50938100125CD9 /* text6.svg in Resources */,
